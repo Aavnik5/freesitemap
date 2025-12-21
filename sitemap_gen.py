@@ -7,7 +7,7 @@ import time
 MY_DOMAIN = "https://freepornx.site"
 # Aapka Worker URL jisme ab Load More/AJAX logic hai
 API_URL = "https://sfwalbum.hikeapp-pvtltd.workers.dev/feed" 
-MAX_PAGES = 100 
+MAX_PAGES = 5
 
 def main():
     video_urls = set()
