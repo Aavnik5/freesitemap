@@ -4,79 +4,57 @@ from datetime import datetime
 import time
 
 # --- CONFIGURATION ---
-MY_DOMAIN = "https://freepornx.site" # Sitemap ke links ke liye
-# Data fetch karne ke liye seedha Cloudflare Worker use karenge
+MY_DOMAIN = "https://freepornx.site"
 API_URL = "https://sfwalbum.hikeapp-pvtltd.workers.dev/feed" 
-
-MAX_PAGES = 1000 # Kitne pages scan karne hain (Badha sakte ho)
+MAX_PAGES = 20 #
 LINKS_PER_SITEMAP = 40000 
 
+def ping_google():
+    """Google ko notify karne ke liye ki sitemap update ho gaya hai"""
+    sitemap_url = f"{MY_DOMAIN}/sitemap_index.xml"
+    ping_url = f"https://www.google.com/ping?sitemap={sitemap_url}"
+    try:
+        res = requests.get(ping_url)
+        if res.status_code == 200:
+            print("✅ Google Ping Successful! Google ko khabar mil gayi hai.")
+        else:
+            print(f"⚠️ Ping failed with status: {res.status_code}")
+    except Exception as e:
+        print(f"❌ Ping Error: {e}")
+
 def fetch_data(page_no):
-    print(f"🔎 Fetching Page {page_no} via Workers.dev...")
+    print(f"🔎 Fetching Page {page_no} via Workers.dev...") #
     try:
         params = {'page': page_no, 'cat': 'new'}
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'application/json'
-        }
-        
-        # Seedha Worker URL call kar rahe hain
-        res = requests.get(API_URL, params=params, headers=headers, timeout=30)
-        
-        if res.status_code != 200:
-            print(f"🛑 Worker Error {res.status_code}. Deploy check karo!")
-            return None
-            
-        data = res.json().get('data', [])
-        return data
-    except Exception as e:
-        print(f"❌ Connection Error: {e}")
-        return []
+        res = requests.get(API_URL, params=params, timeout=10)
+        return res.json().get('data', []) if res.status_code == 200 else []
+    except: return []
 
 def main():
-    video_links = []
-    
+    video_urls = []
+    # Loop for fetching 2000 pages
     for p in range(1, MAX_PAGES + 1):
-        items = fetch_data(p)
-        if items is None: break # Error aane pe ruk jao
-        if not items: 
-            print(f"📭 Page {p} khali hai. Exit.")
-            break 
-        
-        for item in items:
-            url = item.get('video_page_url', '')
-            if '/videos/' in url:
-                # freshporno link se slug nikalna: /videos/slug-name/
-                slug = url.split('/videos/')[1].strip('/')
-                # Sitemap mein asli domain ka link dalna
-                video_links.append(f"{MY_DOMAIN}/video-viewer.html?view={slug}")
-        
-        print(f"✅ Page {p}: Found {len(items)} videos")
-        time.sleep(1) # Gap zaroori hai
+        data = fetch_data(p)
+        if not data: break
+        for item in data:
+            slug = item['url'].split('/videos/')[1].strip('/')
+            video_urls.append(f"{MY_DOMAIN}/video-viewer.html?view={slug}")
+        time.sleep(0.1) # Safe crawling
 
-    video_links = list(set(video_links))
-    if not video_links:
-        print("❌ Kuch nahi mila! Worker ka response check kar.")
-        return
-
-    # 1. Individual Sitemap (sitemap_1.xml)
+    # Sitemap XML creation logic
     urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for link in video_links:
+    for link in video_urls:
         u = ET.SubElement(urlset, "url")
         ET.SubElement(u, "loc").text = link
         ET.SubElement(u, "lastmod").text = datetime.now().strftime("%Y-%m-%d")
-    
+
+    # File write and push to GitHub/Netlify
     ET.ElementTree(urlset).write("sitemap_1.xml", encoding="utf-8", xml_declaration=True)
     
-    # 2. Sitemap Index (sitemap_index.xml)
-    idx = ET.Element("sitemapindex", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    s = ET.SubElement(idx, "sitemap")
-    ET.SubElement(s, "loc").text = f"{MY_DOMAIN}/sitemap_1.xml"
-    ET.SubElement(s, "lastmod").text = datetime.now().strftime("%Y-%m-%d")
+    print(f"🚀 Sitemap created with {len(video_urls)} links!")
     
-    ET.ElementTree(idx).write("sitemap_index.xml", encoding="utf-8", xml_declaration=True)
-    
-    print(f"🚀 SUCCESS! Found {len(video_links)} videos and generated sitemaps.")
+    # 🔥 PING GOOGLE NOW
+    ping_google()
 
 if __name__ == "__main__":
     main()
