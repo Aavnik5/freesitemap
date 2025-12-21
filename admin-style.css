@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Admin Page Specific Styles */
+.admin-page {
+    background-color: #f7f8fa; /* Light grey background */
+    color: #333; /* Darker text color */
+    font-family: 'Inter', sans-serif; /* Modern font */
+}
+
+/* Improved card styles */
+.admin-page .card {
+    background-color: #FFFFFF; /* White card background */
+    border: 1px solid #e0e0e0; /* Lighter border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle box shadow */
+    transition: box-shadow 0.3s ease;
+}
+
+.admin-page .card:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+}
+
+.admin-page .card-header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 600;
+}
+
+/* Improved form elements */
+.admin-page .form-label {
+    font-weight: 500;
+}
+
+.admin-page .form-control,
+.admin-page .form-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 10px;
+}
+
+.admin-page .form-control:focus,
+.admin-page .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Improved button styles */
+.admin-page .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.admin-page .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Other elements */
+.admin-page .list-group-item {
+    background-color: #FFFFFF;
+    border: 1px solid #e0e0e0;
+}
+
+.admin-page .modal-content {
+    border-radius: 8px;
+}
+
+
+
+/* Admin Navbar Specific Styles */
+.admin-navbar {
+    background-color: #2c3e50 !important; /* Dark blue background */
+    padding: 15px 0; /* More padding */
+}
+
+.admin-navbar .navbar-brand-stylish {
+    font-size: 1.8rem; /* Larger font size */
+    font-weight: 700; /* Bolder font weight */
+    color: #ecf0f1 !important; /* Light text color */
+}

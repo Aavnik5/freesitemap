@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add New Page</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D'0%200%20384%20512'%3E%3Cpath%20fill%3D'%23dc3545'%20d%3D'M153.6%2029.9l-56.5%2056.5c-9.4%209.4-9.4%2024.6%200%2033.9l80%2080c9.4%209.4%2024.6%209.4%2033.9%200l56.5-56.5c9.4-9.4%209.4-24.6%200-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9%200zM64%20192c-35.3%200-64%2028.7-64%2064V448c0%2035.3%2028.7%2064%2064%2064H288c35.3%200%2064-28.7%2064-64V256c0-35.3-28.7-64-64-64H64zm256%2064H304c-8.8%200-16-7.2-16-16s7.2-16%2016-16h16c8.8%200%2016%207.2%2016%2016v32c0%208.8-7.2%2016-16%2016H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16H304c-8.8%200-16%207.2-16%2016v64c0%208.8%207.2%2016%2016%2016h16c8.8%200%2016-7.2%2016-16V368c0-8.8-7.2-16-16-16H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16z'%2F%3E%3C%2Fsvg%3E">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="juicyads-site-verification" content="052a69284d0e2be1e0593281e8d48ea2">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body class="admin-page">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { firebaseConfig } from './firebase.js';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const authButton = document.getElementById('auth-button');
+            if (user) {
+                // User is signed in
+                document.querySelector('main').style.display = 'block'; // Show content
+                authButton.textContent = 'Logout';
+                authButton.onclick = async () => {
+                    try {
+                        await signOut(auth);
+                        // onAuthStateChanged listener will handle the redirect to login.html
+                    } catch (error) {
+                        console.error("Error signing out:", error);
+                        alert("Error signing out: " + error.message);
+                    }
+                };
+            } else {
+                // User is signed out, redirect to login page
+                authButton.textContent = 'Login';
+                authButton.onclick = () => {
+                    window.location.href = 'admin/anikaai.html';
+                };
+                window.location.href = 'admin/anikaai.html'; // Ensure redirect if not logged in
+            }
+        });
+    </script>
+    <nav class="navbar navbar-expand-lg navbar-dark admin-navbar">
+        <div class="container">
+            <span class="navbar-brand navbar-brand-stylish">Admin Panel</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="nav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light" id="auth-button"></button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <!-- Tab navigation -->
+        <ul class="nav nav-tabs" id="adminTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="nav-links-tab" data-bs-toggle="tab" data-bs-target="#nav-links-pane" type="button" role="tab">Manage Navigation</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="articles-tab" data-bs-toggle="tab" data-bs-target="#articles-pane" type="button" role="tab">Manage Articles</button>
+            </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content" id="adminTabContent">
+            <!-- Navigation Management Pane -->
+            <div class="tab-pane fade show active" id="nav-links-pane" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-center">Add/Edit Navigation Link</h2>
+                            </div>
+                            <div class="card-body">
+                                <form id="add-page-form">
+                                    <div class="mb-3">
+                                        <label for="parent-menu" class="form-label">Parent Menu:</label>
+                                        <select class="form-select" id="parent-menu">
+                                            <option value="">-- None (Top-level) --</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="page-name" class="form-label">Page Name:</label>
+                                        <input type="text" class="form-control" id="page-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="folder-id" class="form-label">Folder ID:</label>
+                                        <input type="text" class="form-control" id="folder-id">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="page-type" class="form-label">Page Type:</label>
+                                        <select class="form-select" id="page-type">
+                                            <option value="gallery">Gallery</option>
+                                            <option value="pdf">PDF Viewer</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="seo-title" class="form-label">SEO Title:</label>
+                                        <input type="text" class="form-control" id="seo-title">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="meta-description" class="form-label">Meta Description:</label>
+                                        <textarea class="form-control" id="meta-description" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="slug" class="form-label">Slug:</label>
+                                        <input type="text" class="form-control" id="slug">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="caption-keywords" class="form-label">Caption Keywords (comma-separated):</label>
+                                        <input type="text" class="form-control" id="caption-keywords">
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-danger">Add Page</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-center">Current Menu Structure</h2>
+                            </div>
+                            <div class="card-body">
+                                <ul id="menu-structure" class="list-group">
+                                    <!-- Menu structure will be rendered here by admin.js -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h2 class="text-center">Total Stats</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-4 col-sm-12 mb-3">
+                                        <i class="fas fa-eye fa-2x text-primary"></i>
+                                        <h4 class="mt-2" id="total-views">Loading...</h4>
+                                        <p class="text-muted">Total Views</p>
+                                    </div>
+                                    <div class="col-md-4 col-sm-12 mb-3">
+                                        <i class="fas fa-heart fa-2x text-danger"></i>
+                                        <h4 class="mt-2" id="total-likes">Loading...</h4>
+                                        <p class="text-muted">Total Likes</p>
+                                    </div>
+                                    <div class="col-md-4 col-sm-12 mb-3">
+                                        <i class="fas fa-share-alt fa-2x text-success"></i>
+                                        <h4 class="mt-2" id="total-shares">Loading...</h4>
+                                        <p class="text-muted">Total Shares</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Management Pane -->
+            <div class="tab-pane fade" id="articles-pane" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-center">Add/Edit Article</h2>
+                            </div>
+                            <div class="card-body">
+                                <form id="article-form">
+                                    <input type="hidden" id="article-id">
+                                    <div class="mb-3">
+                                        <label for="article-title" class="form-label">Title:</label>
+                                        <input type="text" class="form-control" id="article-title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="article-content" class="form-label">Content (HTML allowed):</label>
+                                        <textarea class="form-control" id="article-content" rows="10"></textarea>
+                                    </div>
+                                    <hr>
+                                    <h5 class="mt-3">SEO Fields</h5>
+                                    <div class="mb-3">
+                                        <label for="article-seo-title" class="form-label">SEO Title:</label>
+                                        <input type="text" class="form-control" id="article-seo-title">
+                                    </div>
+                                                                         <div class="mb-3">
+                                                                            <label for="article-seo-desc" class="form-label">Meta Description:</label>
+                                                                            <textarea class="form-control" id="article-seo-desc" rows="3"></textarea>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="article-slug" class="form-label">Slug:</label>
+                                                                            <input type="text" class="form-control" id="article-slug">
+                                                                        </div>                                     <div class="mb-3">
+                                        <label for="article-seo-keywords" class="form-label">Keywords (comma-separated):</label>
+                                        <input type="text" class="form-control" id="article-seo-keywords">
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-danger">Save Article</button>
+                                        <button type="button" id="clear-article-form-btn" class="btn btn-secondary">Clear Form</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-center">Existing Articles</h2>
+                            </div>
+                            <div class="card-body">
+                                <ul id="articles-list" class="list-group">
+                                    <!-- Articles will be rendered here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js" type="module"></script>
+    <footer style="background:#000; padding:20px; text-align:center; border-top:1px solid #333; margin-top:50px; font-size:12px; color:#666;">
+        <p>&copy; 2025 FreePornX. All rights reserved.</p>
+        <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+            <a href="terms.html" style="color:#999; text-decoration:none;">Terms</a>
+            <a href="privacy.html" style="color:#999; text-decoration:none;">Privacy</a>
+            <a href="dmca.html" style="color:#999; text-decoration:none;">DMCA</a>
+            <a href="2257.html" style="color:#999; text-decoration:none;">2257 Compliance</a>
+            <a href="contact.html" style="color:#999; text-decoration:none;">Contact</a>
+        </div>
+        <p style="margin-top:10px; font-size:10px;">This site contains adult material. You must be 18+ to enter.</p>
+    </footer>
+</body>
+</html>

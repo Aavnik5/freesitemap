@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GIF Viewer - FreePornX</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20384%20512'%3E%3Cpath%20fill%3D'%23dc3545'%20d%3D'M153.6%2029.9l-56.5%2056.5c-9.4%209.4-9.4%2024.6%200%2033.9l80%2080c9.4%209.4%2024.6%209.4%2033.9%200l56.5-56.5c9.4-9.4%209.4-24.6%200-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9%200zM64%20192c-35.3%200-64%2028.7-64%2064V448c0%2035.3%2028.7%2064%2064%2064H288c35.3%200%2064-28.7%2064-64V256c0-35.3-28.7-64-64-64H64zm256%2064H304c-8.8%200-16-7.2-16-16s7.2-16%2016-16h16c8.8%200%2016%207.2%2016%2016v32c0%208.8-7.2%2016-16%2016H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16H304c-8.8%200-16%207.2-16%2016v64c0%208.8%207.2%2016%2016%2016h16c8.8%200%2016-7.2%2016-16V368c0-8.8-7.2-16-16-16H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16z'%2F%3E%3C%2Fsvg%3E">
+    <meta name="robots" content="noindex, nofollow"> <!-- Prevent search engines from indexing this viewer page -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body, html { 
+            margin: 0; padding: 0; background-color: #000; height: 100%; overflow: hidden; color: white;
+        }
+        .main-container {
+            padding-top: 70px;
+            padding-bottom: 70px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #gif-element {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .app-header { 
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); z-index: 1002; padding: 10px 15px; border-bottom: 1px solid #333; backdrop-filter: blur(5px); 
+        }
+        .brand-logo { font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1002;
+        }
+        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; width: 16.6%; text-decoration: none; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .nav-btn.active { color: #dc3545; }
+        .nav-btn i { font-size: 20px; margin-bottom: 4px; }
+        .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <a class="brand-logo text-danger text-decoration-none" href="index.html"><i class="fas fa-fire"></i> FreePornX</a>
+    </header>
+
+    <div class="main-container">
+        <div id="loader" class="loader"><div class="spinner-border text-danger"></div></div>
+        <div id="gif-container"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-btn" onclick="switchTab('shorts')"><i class="fas fa-play-circle"></i><span>Shorts</span></div>
+        <div class="nav-btn" onclick="switchTab('video')"><i class="fas fa-video"></i><span>Video</span></div>
+        <div class="nav-btn" onclick="switchTab('pics')"><i class="fas fa-images"></i><span>Pics</span></div>
+        <div class="nav-btn" onclick="switchTab('comics')"><i class="fas fa-book-open"></i><span>Comics</span></div>
+        <div class="nav-btn active" onclick="switchTab('gifs')"><i class="fas fa-magic"></i><span>Gifs</span></div>
+        <div class="nav-btn" onclick="switchTab('articles')"><i class="fas fa-newspaper"></i><span>Articles</span></div>
+    </div>
+
+    <script>
+        const GIF_WORKER_URL = "https://gifandpicturefreex.freshhub95.workers.dev";
+
+        function switchTab(tab) {
+            window.location.href = `index.html?tab=${tab}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const gifId = urlParams.get('id');
+            const fallbackUrl = urlParams.get('url'); // For old share links
+            const loader = document.getElementById('loader');
+            const container = document.getElementById('gif-container');
+
+            let gifUrl;
+
+            if (gifId) {
+                // Reconstruct the URL from the ID
+                gifUrl = `https://porngif.xxx/gif/${gifId}.gif`;
+            } else if (fallbackUrl) {
+                // Use the full URL if ID is not present (for backward compatibility)
+                gifUrl = fallbackUrl;
+            }
+
+            if (!gifUrl) {
+                container.innerHTML = '<div class="alert alert-danger m-3">No GIF specified.</div>';
+                loader.style.display = 'none';
+                return;
+            }
+            
+            const isVideo = gifUrl.match(/\.(mp4|webm)$/i);
+            const element = document.createElement(isVideo ? 'video' : 'img');
+            element.id = 'gif-element';
+
+            const proxiedUrl = `${GIF_WORKER_URL}/proxy?url=${encodeURIComponent(gifUrl)}`;
+
+            if (isVideo) {
+                element.setAttribute('playsinline', '');
+                element.setAttribute('autoplay', '');
+                element.setAttribute('loop', '');
+                element.setAttribute('muted', '');
+                element.setAttribute('controls', ''); // Add controls for video
+            }
+            
+            element.src = proxiedUrl;
+            
+            element.onload = () => { loader.style.display = 'none'; };
+            element.onerror = () => { 
+                loader.style.display = 'none';
+                container.innerHTML = '<div class="alert alert-danger m-3">Error loading GIF.</div>';
+            };
+
+            container.appendChild(element);
+        });
+    </script>
+</body>
+</html>

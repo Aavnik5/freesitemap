@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: freepornx.site/sitemap.xml

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player - FreePornX</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- <title>FreePornX | Free Porn Videos, XXX Nude Photos, Savita & Velamma Comics PDF</title> -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D'0%200%20384%20512'%3E%3Cpath%20fill%3D'%23dc3545'%20d%3D'M153.6%2029.9l-56.5%2056.5c-9.4%209.4-9.4%2024.6%200%2033.9l80%2080c9.4%209.4%2024.6%209.4%2033.9%200l56.5-56.5c9.4-9.4%209.4-24.6%200-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9%200zM64%20192c-35.3%200-64%2028.7-64%2064V448c0%2035.3%2028.7%2064%2064%2064H288c35.3%200%2064-28.7%2064-64V256c0-35.3-28.7-64-64-64H64zm256%2064H304c-8.8%200-16-7.2-16-16s7.2-16%2016-16h16c8.8%200%2016%207.2%2016%2016v32c0%208.8-7.2%2016-16%2016H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16H304c-8.8%200-16%207.2-16%2016v64c0%208.8%207.2%2016%2016%2016h16c8.8%200%2016-7.2%2016-16V368c0-8.8-7.2-16-16-16H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16z'%2F%3E%3C%2Fsvg%3E">
+    
+    <meta name="description" content="The best porn video website: Watch free viral porn videos, browse HD xxx nude photos gallery, download full episodes of Savita Bhabhi & Velamma comics PDF, and read hot desi sex stories. Daily updates.">
+    
+    <meta name="keywords" content="porn pictures, xxx photos, nude images, desi bhabhi pics, indian sex photos, savita bhabhi pdf, velamma comics free, porn video, desi sex video, hindi sex stories, adult gallery, viral shorts, whatsapp status video, desi bhabhi reels, indian web series">
+    
+    <meta name="author" content="Free PornX Entertainment">
+    <meta name="robots" content="index, follow">
+    
+    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+    <meta name="rating" content="adult" />
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://freepornx.site/">
+    <meta property="og:title" content="Free PornX | Free Porn, Nude Pics & Adult Comics">
+    <meta property="og:description" content="Unlimited free access to Viral Porn, XXX Photos, Savita Bhabhi Comics PDF, and Sex Stories. No signup.">
+    <meta property="og:image" content="https://freepornx.site/cover-adult.jpg"> 
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://freepornx.site/">
+    <meta name="twitter:title" content="X-App | Porn Videos & Comics PDF">
+    <meta name="twitter:description" content="Watch trending xxx shorts, view nude gallery, and read adult comics for free.">
+    <meta name="twitter:image" content="https://freepornx.site/cover-adult.jpg">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="https://freepornx.site/">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Free PornX Entertainment",
+      "url": "https://freepornx.site/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://freepornx.site/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "description": "Free platform for porn videos, adult comics, nude photos, and sex stories."
+    }
+    </script>
+    <style>
+        body {
+            background-color: #0f0f0f; /* Dark YouTube-like background */
+            color: #ffffff;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* LAYOUT CONTAINER */
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        /* --- 1. PLAYER SECTION --- */
+        .video-wrapper {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- 2. ACTION BAR (Like/View/Download) --- */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 15px;
+        }
+        /* NEW: Styling for the div containing Share and Download buttons */
+        .action-bar > div:last-child {
+            display: flex; /* Use flexbox to arrange items */
+            gap: 15px; /* Space between buttons */
+            align-items: center; /* Vertically align items */
+        }
+
+        .download-btn {
+            background-color: #333; /* Darker background for a modern button look */
+            color: #fff; /* White text/icon for contrast */
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px; /* Larger padding for bigger clickable area */
+            border-radius: 8px; /* Rounded corners */
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s; /* Smooth hover effect */
+            display: inline-flex; /* Enable flex properties for content inside */
+            align-items: center; /* Center icon vertically */
+            justify-content: center; /* Center icon horizontally */
+        }
+        .download-btn:hover {
+            background-color: #dc3545; /* Red on hover for interaction feedback */
+            color: #fff;
+        }
+        .download-btn i {
+            font-size: 20px; /* Make the icon larger */
+        }
+        .download-btn:hover { text-decoration: none; } /* Ensure no underline on hover */
+
+        /* --- 3. VIDEO INFO (Tags Style) --- */
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+            min-width: 80px;
+            font-size: 14px;
+            padding-top: 4px;
+        }
+
+        /* TAGS / CHIPS DESIGN (Gray Box) */
+        .tag-chip {
+            background-color: #272727;
+            color: #aaa;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+        .tag-chip:hover {
+            background-color: #3f3f3f;
+            color: #fff;
+        }
+        .tag-chip.active {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .tag-chip.plus {
+            background-color: #333;
+            font-weight: bold;
+        }
+
+        /* ADVERTISEMENT BOX */
+        .ad-box {
+            background: #1a1a1a;
+            color: #444;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* --- 4. SIDEBAR (RECOMMENDED GRID) --- */
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .video-card-side {
+            display: flex;
+            flex-direction: column; /* Mobile: Stack */
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        /* Desktop: Row layout for sidebar items */
+        @media (min-width: 992px) {
+            .video-card-side {
+                flex-direction: row;
+            }
+            .side-thumb {
+                width: 160px;
+                flex-shrink: 0;
+            }
+        }
+
+        .side-thumb {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .side-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .side-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .side-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .side-meta {
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        /* BADGES */
+        .badge-4k {
+            position: absolute;
+            top: 4px; right: 4px;
+            background: #f7e600; color: #000;
+            font-size: 10px; font-weight: 700;
+            padding: 1px 3px; border-radius: 2px;
+        }
+        .badge-dur {
+            position: absolute;
+            bottom: 4px; right: 4px;
+            background: rgba(0,0,0,0.8); color: #fff;
+            font-size: 10px; padding: 1px 4px; border-radius: 3px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
+        .nav-btn {
+            color: #666;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            width: 16.6%; /* Adjusted for 6 items */
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }        
+        .nav-btn.active { color: #dc3545; }
+        .nav-btn i { font-size: 20px; margin-bottom: 4px; }
+
+        /* VIDEO GRID LAYOUT - SINGLE COLUMN LIST */
+        .video-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Gap between list items */
+            padding: 10px;
+            background-color: #0f0f0f;
+        }
+
+        /* CARD DESIGN */
+        .video-card {
+            /* display: flex; */
+            /* flex-direction: row; */
+            gap: 15px;
+            cursor: pointer;
+            background: transparent;
+            align-items: flex-start;
+        }
+
+        /* THUMBNAIL CONTAINER */
+        .thumb-box {
+            position: relative;
+            width: 100%;
+            flex-shrink: 0;
+            aspect-ratio: 16 / 9;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #222;
+        }
+
+        .thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        /* OVERLAYS (4K Badge & Duration) (from index.html) */
+        .badge-4k {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background-color: #f7e600; /* Yellow Color */
+            color: #000;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            z-index: 2;
+        }
+
+        .duration-badge {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background-color: rgba(0, 0, 0, 0.85); /* Black transparent */
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 5px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        /* TEXT INFO (from index.html) */
+        .video-info {
+            padding-top: 8px;
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        .video-meta i {
+            margin-right: 4px;
+        }
+
+        /* Like Icon Blue Color (from index.html) */
+        .fa-thumbs-up {
+            color: #dc3545; 
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 15px;">
+            <a class="brand-logo text-danger text-decoration-none m-0 p-0" href="index.html"><i class="fas fa-fire"></i> FreePornX</a>
+            
+            <div class="dropdown">
+                <button class="btn btn-dark" type="button" id="menu-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="menu-toggle">
+                    <li><a class="dropdown-item text-light" href="terms.html">Terms</a></li>
+                    <li><a class="dropdown-item text-light" href="privacy.html">Privacy</a></li>
+                    <li><a class="dropdown-item text-light" href="dmca.html">DMCA</a></li>
+                    <li><a class="dropdown-item text-light" href="2257.html">2257 Compliance</a></li>
+                    <li><a class="dropdown-item text-light" href="contact.html">Contact</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-light" href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="category-scroll" id="categoryContainer"></div>
+    </header>
+
+    <div class="main-view">
+        <div class="page-container">
+            <div class="row">
+                
+                <div class="col-lg-8">
+                    
+                    <div class="video-wrapper">
+                        <video id="player" playsinline controls>
+                            </video>
+                    </div>
+
+                    <!-- Action Bar Moved Up -->
+                    <div class="action-bar">
+                        <div class="stats-group">
+                            <span><i class="fas fa-thumbs-up"></i> <span id="like-count">--</span></span>
+                            <span><i class="fas fa-thumbs-down"></i> <span id="dislike-count">--</span></span>
+                            <span><i class="fas fa-eye"></i> <span id="view-count">--</span></span>
+                        </div>
+                        <div>
+                            <a href="#" id="share-link" class="download-btn" onclick="shareVideo()" target="_blank"><i class="fas fa-share-alt"></i></a>
+                            <a href="#" id="download-link" class="download-btn" target="_blank"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Ad Box Moved Up -->
+                    <div class="ad-box" style="padding: 10px;">
+                        <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; flex-direction:column;">
+                       
+                            <div>
+                              <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script> 
+ <ins class="eas6a97888e10" data-zoneid="5792418"></ins> 
+ <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1 class="video-title" id="video-title">Loading Video Title...</h1>
+
+                    <!-- Description -->
+                    <div class="info-row">
+                        <div class="info-label">Description:</div>
+                        <div id="video-description">Loading Description...</div>
+                    </div>
+
+                    <!-- Models -->
+                    <div class="info-row">
+                        <div class="info-label">Models:</div>
+                        <div id="video-models">Loading Models...</div>
+                    </div>
+
+                    <!-- Channels -->
+                    <div class="info-row">
+                        <div class="info-label">Channels:</div>
+                        <div id="video-channels">Loading Channels...</div>
+                    </div>
+                    
+                    <div id="meta-container">
+                        <div class="info-row">
+                            <div class="info-label">Categories:</div>
+                            <div id="tags-list">
+                                <span class="tag-chip">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="sidebar-title">Related Videos</div>
+                    
+                    <div id="related-grid" class="video-grid">
+                    </div>
+
+                    <div class="text-center mt-4 mb-5">
+                        <button id="btn-load-related" class="btn btn-outline-danger btn-sm w-100" onclick="loadMoreRelated()" style="display: none;">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-btn" onclick="switchTab('shorts', this)"><i class="fas fa-play-circle"></i><span>Shorts</span></div>
+        <div class="nav-btn active" onclick="switchTab('video', this)"><i class="fas fa-video"></i><span>Video</span></div>
+        <div class="nav-btn" onclick="switchTab('pics', this)"><i class="fas fa-images"></i><span>Pics</span></div>
+        <div class="nav-btn" onclick="switchTab('comics', this)"><i class="fas fa-book-open"></i><span>Comics</span></div>
+        <div class="nav-btn" onclick="switchTab('gifs', this)"><i class="fas fa-magic"></i><span>Gifs</span></div>
+        <div class="nav-btn" onclick="switchTab('articles', this)"><i class="fas fa-newspaper"></i><span>Articles</span></div>
+    </div>
+
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+        // --- 1. CONFIGURATION ---
+        // Apna Worker URL yahan daalein (Bina last slash ke)
+        const WORKER_URL = "https://sfwalbum.hikeapp-pvtltd.workers.dev"; 
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQ3Ced4Ah2KaNlU6BFa5UfOTfFnXXjY2k",
+            authDomain: "gallaryanika.firebaseapp.com",
+            projectId: "gallaryanika",
+            storageBucket: "gallaryanika.firebasestorage.app",
+            messagingSenderId: "97730645039",
+            appId: "1:97730645039:web:b215bc4482900bc1a30ada",
+            measurementId: "G-M7S49TJP6X"
+        };
+        let db;
+        let currentTab = 'video'; // Default to video for this page
+
+        // NEW: Helper function to navigate to a sanitized model/channel path
+        function navigateToPath(itemUrl) {
+            let path = itemUrl;
+            // If it's a full URL, get just the pathname
+            if (path.startsWith('http')) {
+                try { path = new URL(path).pathname; } catch (e) { /* ignore malformed URLs */ }
+            }
+            // Tidy up the path by removing leading/trailing slashes
+            if (path.startsWith('/')) path = path.substring(1);
+            if (path.endsWith('/')) path = path.slice(0, -1);
+            
+            // Navigate to the index page with the clean path
+            window.location.href = `index.html?tab=video&path=${encodeURIComponent(path)}`;
+        }
+
+        // Initialize Firebase
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+            } catch (e) {
+                showError("Firebase Startup Error: " + e.message);
+            }
+        });
+
+        const generateSlug = (text) => {
+            if (!text) return '';
+            return text.toString().toLowerCase()
+                .replace(/\.(jpg|jpeg|png|webp|gif)$/i, '')
+                .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        };
+
+        // Get Params from URL (video-viewer.html?view=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('view');
+        let videoPageUrl = null;
+        if (slug) {
+            videoPageUrl = `https://freshporno.net/videos/${slug}/`;
+        }
+        const initialTag = urlParams.get('tag'); // Get the tag from the URL
+
+        const formatNumber = (num) => {
+            const numericValue = parseInt(String(num).replace(/,/g, ''));
+            if (isNaN(numericValue)) return num;
+
+            if (numericValue >= 1000000) { // Millions
+                return (numericValue / 1000000).toFixed(1) + 'M';
+            }
+            if (numericValue >= 100000) { // Lakhs (100,000)
+                return (numericValue / 100000).toFixed(1) + 'L';
+            }
+            if (numericValue >= 1000) { // Thousands
+                return (numericValue / 1000).toFixed(1) + 'K';
+            }
+            return numericValue.toString();
+        };
+
+        // Initialize Player
+        const player = new Plyr('#player', {
+            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+            autoplay: true,
+            muted: true // Autoplay ke liye zaroori
+        });
+
+        // Global Variables for Related Videos
+        let currentTag = initialTag || ""; // Use tag from URL if available
+        let relatedPage = 1;
+
+        // --- 2. LOAD MAIN VIDEO INFO ---
+        async function loadVideoDetails() {
+            if (!videoPageUrl) {
+                alert("No video URL provided!");
+                return;
+            }
+
+            try {
+                // Call Worker Extract API
+                const extractUrl = `${WORKER_URL}/extract?url=${encodeURIComponent(videoPageUrl)}`;
+                const res = await fetch(extractUrl);
+                const data = await res.json();
+
+                if (data.success) {
+                    // A. Update Player
+                    const streamUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(data.mp4_url)}`;
+                    console.log("MP4 URL from worker:", data.mp4_url);
+                    console.log("Stream URL being set:", streamUrl);
+                    
+                    const videoEl = document.getElementById('player');
+                    videoEl.src = streamUrl;
+                    videoEl.poster = data.thumbnail || "";
+                    
+                    // Allow Plyr to pick up the source directly from the video tag
+                    player.play().catch(() => player.muted = true);
+
+                    // B. Update Info & SEO
+                    const videoTitle = data.title || "Unknown Title";
+                    
+                    let modelString = "";
+                    if (data.models && data.models.length > 0) {
+                        modelString = data.models.map(model => model.name).join(', ');
+                    }
+
+                    let channelString = "";
+                    if (data.channels && data.channels.length > 0) {
+                        channelString = data.channels.map(channel => channel.name).join(', ');
+                    }
+
+                    // Construct SEO Title
+                    let seoTitle = videoTitle;
+                    if (modelString) {
+                        seoTitle += ` | ${modelString}`;
+                    }
+                    if (channelString) {
+                        seoTitle += ` | ${channelString}`;
+                    }
+                    seoTitle += ` - FreePornX`;
+
+                    document.title = seoTitle;
+                    document.getElementById('video-title').innerText = videoTitle;
+                    document.getElementById('download-link').href = streamUrl;
+
+                    // --- Update Meta Tags for SEO & Sharing ---
+                    const pageUrl = window.location.href;
+
+                    // Define the description content
+                    let finalDescription = videoTitle;
+                    if (modelString) {
+                        finalDescription += ` - Models: ${modelString}`;
+                    }
+                    if (channelString) {
+                        finalDescription += ` - Channels: ${channelString}`;
+                    }
+                    finalDescription += ` | Watch the full HD video on FreePornX. ${data.description || ''}`;
+
+
+                    // Main meta tags
+                    const metaDesc = document.querySelector('meta[name="description"]');
+                    if (metaDesc) metaDesc.setAttribute("content", finalDescription);
+
+                    const metaKeywords = document.querySelector('meta[name="keywords"]');
+                    if (metaKeywords) {
+                        let combinedKeywords = (data.tags ? data.tags + ", " : "") + 
+                                               (modelString ? modelString + ", " : "") +
+                                               (channelString ? channelString + ", " : "") +
+                                               "porn videos, free porn, xxx, hd porn"; // Add some generic keywords
+                        metaKeywords.setAttribute("content", combinedKeywords);
+                    }
+
+                    const canonicalLink = document.querySelector('link[rel="canonical"]');
+                    if (canonicalLink) canonicalLink.setAttribute("href", pageUrl);
+
+                    // OpenGraph (Facebook, etc.)
+                    const ogTitle = document.querySelector('meta[property="og:title"]');
+                    if (ogTitle) ogTitle.setAttribute("content", seoTitle);
+                    const ogUrl = document.querySelector('meta[property="og:url"]');
+                    if (ogUrl) ogUrl.setAttribute("content", pageUrl);
+                    const ogDesc = document.querySelector('meta[property="og:description"]');
+                    if (ogDesc) ogDesc.setAttribute("content", finalDescription);
+                    if (data.thumbnail) {
+                        const ogImage = document.querySelector('meta[property="og:image"]');
+                        if (ogImage) ogImage.setAttribute("content", data.thumbnail);
+                    }
+
+                    // Twitter
+                    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+                    if (twitterTitle) twitterTitle.setAttribute("content", seoTitle);
+                    const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+                    if (twitterDesc) twitterDesc.setAttribute("content", finalDescription);
+                    if (data.thumbnail) {
+                        const twitterImage = document.querySelector('meta[name="twitter:image"]');
+                        if (twitterImage) twitterImage.setAttribute("content", data.thumbnail);
+                    }
+                    
+                    // Generate related fake stats with proportions
+                    const baseLikes = Math.floor(Math.random() * 9000000) + 1000000; // 1M to 10M
+                    const baseDislikes = Math.floor(Math.random() * (baseLikes * 0.01)) + 100; // 100 to 1% of likes
+                    const baseViews = Math.floor(Math.random() * (baseLikes * 10)) + (baseLikes * 5); // 5 to 15 times likes
+
+                    document.getElementById('like-count').innerText = formatNumber(baseLikes);
+                    document.getElementById('dislike-count').innerText = formatNumber(baseDislikes);
+                    document.getElementById('view-count').innerText = formatNumber(baseViews);
+
+                    // C. Render Tags (Keywords)
+                    const tagsContainer = document.getElementById('tags-list');
+                    tagsContainer.innerHTML = '';
+                    
+                    if (data.tags) {
+                        const tagsArray = data.tags.split(',').map(t => t.trim());
+                        tagsArray.forEach(tag => {
+                            if(tag) {
+                                const span = document.createElement('a');
+                                span.className = 'tag-chip';
+                                span.innerText = tag;
+                                span.href = `#`; // Prevent page jump
+                                tagsContainer.appendChild(span);
+                                // Highlight the active tag if it matches initialTag or currentTag
+                                if (tag === currentTag) {
+                                    span.classList.add('active');
+                                }
+                            }
+                        });
+
+                        // If currentTag was not set by URL, set it to the first tag from the video details
+                        if (!currentTag && tagsArray.length > 0) {
+                            currentTag = tagsArray[0];
+                        }
+
+                        // Ensure the first tag is active and its videos are loaded
+                        // Remove active class from all tags first
+                        document.querySelectorAll('#tags-list .tag-chip').forEach(chip => {
+                            chip.classList.remove('active');
+                        });
+                        // Add active class to the first tag if it exists
+                        const firstTagElement = document.querySelector('#tags-list .tag-chip');
+                        if (firstTagElement) {
+                            firstTagElement.classList.add('active');
+                            currentTag = firstTagElement.innerText; // Ensure currentTag matches the now-active first tag
+                        }
+                    }
+
+                    // NEW: Display Description
+                    const descriptionEl = document.getElementById('video-description');
+                    descriptionEl.innerText = data.description || "No description available.";
+
+                    // NEW: Display Models
+                    const modelsEl = document.getElementById('video-models');
+                    modelsEl.innerHTML = ''; // Clear "Loading Models..."
+                    if (data.models && data.models.length > 0) {
+                        data.models.forEach(model => {
+                            const chip = document.createElement('span'); // Using span with click for now
+                            chip.className = 'tag-chip';
+                            chip.innerText = model.name;
+                            chip.onclick = () => navigateToPath(model.url);
+                            modelsEl.appendChild(chip);
+                        });
+                    } else {
+                        modelsEl.innerText = "N/A";
+                    }
+
+                    // NEW: Display Channels
+                    const channelsEl = document.getElementById('video-channels');
+                    channelsEl.innerHTML = ''; // Clear "Loading Channels..."
+                    if (data.channels && data.channels.length > 0) {
+                        data.channels.forEach(channel => {
+                            const chip = document.createElement('span'); // Using span with click for now
+                            chip.className = 'tag-chip';
+                            chip.innerText = channel.name;
+                            chip.onclick = () => navigateToPath(channel.url);
+                            channelsEl.appendChild(chip);
+                        });
+                    } else {
+                        channelsEl.innerText = "N/A";
+                    }
+
+
+                    // Always load related videos based on currentTag (which will be first tag if not from URL)
+                    if (currentTag) {
+                        document.getElementById('related-grid').innerHTML = ''; // Clear any pre-existing related videos from worker
+                        relatedPage = 1; // Reset to page 1 for the new tag search
+                        loadMoreRelated();
+                    }
+                    try {
+                        (window.AdProvider = window.AdProvider || []).push({"serve": {}});
+                    } catch (e) {
+                        console.error("Ad serving error:", e);
+                    }
+
+
+                } else {
+                    console.error("Extraction failed:", data);
+                    alert("Could not load video source: " + (data.message || "Unknown error"));
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred while loading video details: " + err.message); // Show a general alert
+            }
+        }
+
+        // --- RENDER FUNCTION (Videos Dikhane ke liye) ---
+        function renderRelatedVideos(videos) {
+            const container = document.getElementById('related-grid');
+            
+            videos.forEach((item, index) => {
+                const views = formatNumber(item.views || Math.floor(Math.random() * 5000000) + 100000); // Use item.views or a random formatted number
+                const div = document.createElement('div');
+                div.className = 'video-card';
+                div.onclick = () => {
+                    const urlParts = item.video_page_url.split('/').filter(Boolean);
+                    const videoSlug = urlParts[urlParts.length - 1];
+                    window.location.href = `video-viewer.html?view=${videoSlug}`;
+                };
+
+                // Thumbnail Proxy URL
+                const thumbUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(item.thumbnail)}`;
+
+                div.innerHTML = `
+                    <div class="thumb-box">
+                        <img src="${thumbUrl}" loading="lazy" alt="thumb">
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${item.title}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+
+                // NEW: Insert ad after every two items (if not the last item)
+                if ((index + 1) % 2 === 0 && (index + 1) < videos.length) {
+                    const adContainer = document.createElement('div');
+                    adContainer.className = 'video-card ad-item'; // Use video-card ad-item for styling
+                    adContainer.style.textAlign = 'center';
+                    adContainer.style.padding = '10px 0';
+                    adContainer.style.background = '#111';
+                    adContainer.style.marginBottom = '15px'; // Add margin to separate from next video-card
+
+                    const adHeading = document.createElement('h6');
+                    adHeading.className = 'text-muted mb-2';
+                    adHeading.style.fontSize = '10px';
+                    adHeading.textContent = 'Advertisement';
+                    adContainer.appendChild(adHeading);
+
+                    const adScript1 = document.createElement('script');
+                    adScript1.async = true;
+                    adScript1.type = 'application/javascript';
+                    adScript1.src = 'https://a.magsrv.com/ad-provider.js';
+                    adContainer.appendChild(adScript1);
+
+                    const adIns = document.createElement('ins');
+                    adIns.className = 'eas6a97888e10';
+                    adIns.dataset.zoneid = '5792418'; // Correct zone ID
+                    adContainer.appendChild(adIns);
+
+                    const adScript2 = document.createElement('script');
+                    adScript2.type = 'application/javascript';
+                    adScript2.textContent = '(AdProvider = window.AdProvider || []).push({"serve": {}});';
+                    adContainer.appendChild(adScript2);
+
+                    container.appendChild(adContainer);
+                }
+            });
+        }
+
+        document.getElementById('tags-list').addEventListener('click', function(event) {
+            if (event.target.classList.contains('tag-chip')) {
+                event.preventDefault(); // Prevent the default anchor tag behavior
+
+                const selectedTag = event.target.innerText;
+                
+                // Remove active class from all tags
+                document.querySelectorAll('.tag-chip').forEach(chip => {
+                    chip.classList.remove('active');
+                });
+                // Add active class to the clicked tag
+                event.target.classList.add('active');
+
+                // Update currentTag and reload related videos
+                currentTag = selectedTag;
+                relatedPage = 1; // Reset page number
+                document.getElementById('related-grid').innerHTML = ''; // Clear existing videos
+                loadMoreRelated();
+            }
+        });
+
+
+        // --- LOAD MORE FUNCTION (Search Logic) ---
+        async function loadMoreRelated() {
+            if (!currentTag) {
+                document.getElementById('btn-load-related').style.display = 'none'; // Hide button if no tag
+                return;
+            }
+
+            const btn = document.getElementById('btn-load-related');
+            btn.innerText = "Loading...";
+            btn.disabled = true;
+
+            try {
+                // A simple check: if related-grid is empty, start from page 1, else from next page
+                if (document.getElementById('related-grid').children.length === 0) {
+                     relatedPage = 1; // Start from page 1 if no related videos rendered yet
+                }
+
+                // Worker FEED API ko call karo Search query ke saath
+                const feedUrl = `${WORKER_URL}/feed?q=${encodeURIComponent(currentTag)}&page=${relatedPage}`;
+                
+                const res = await fetch(feedUrl);
+                const json = await res.json();
+
+                if (json.data && json.data.length > 0) {
+                    renderRelatedVideos(json.data); // Naye videos add karo
+                    relatedPage++; // Agli baar next page aayega
+                    btn.style.display = 'block'; // Make sure the button is visible
+                } else {
+                    btn.innerText = "No More Videos";
+                    btn.style.display = 'none';
+                }
+
+            } catch (err) {
+                console.error("Related load error:", err);
+                btn.innerText = "Error Loading";
+            }
+
+            // Button Reset
+            btn.innerText = "Load More";
+            btn.disabled = false;
+        }
+
+        // --- Tab Switching Function (adapted from index.html) ---
+        function switchTab(tab) {
+            const url = `index.html?tab=${tab}`;
+            window.location.href = url;
+        }
+
+        // Generic error display function (adapted from index.html)
+        function showError(msg) {
+            console.error(msg);
+            // In video-viewer.html, we don't have a dedicated debug-msg div, so just log to console or alert.
+            alert("An error occurred: " + msg);
+        }
+
+        function shareVideo() {
+            const videoTitle = document.getElementById('video-title').innerText;
+            const videoUrl = window.location.href; // The URL of the current video-viewer page
+
+            if (navigator.share) {
+                navigator.share({
+                    title: videoTitle,
+                    url: videoUrl
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(console.error);
+            } else {
+                // Fallback for browsers that don't support the Web Share API
+                // You could offer to copy the link to clipboard, or open a new window to a web-based share service
+                prompt("Copy this link to share:", videoUrl);
+            }
+        }
+
+        // Start Functions
+        loadVideoDetails();
+        // The initial call to loadMoreRelated() will now be handled inside loadVideoDetails or
+        // implicitly by the tag click if a tag is present in the URL.
+        // We ensure that loadMoreRelated is called if there's an initialTag from the URL
+        if (initialTag) {
+            document.getElementById('related-grid').innerHTML = ''; // Clear existing videos
+            loadMoreRelated();
+        }
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1E88F2M75S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1E88F2M75S');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Content</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D'0%200%20384%20512'%3E%3Cpath%20fill%3D'%23dc3545'%20d%3D'M153.6%2029.9l-56.5%2056.5c-9.4%209.4-9.4%2024.6%200%2033.9l80%2080c9.4%209.4%2024.6%209.4%2033.9%200l56.5-56.5c9.4-9.4%209.4-24.6%200-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9%200zM64%20192c-35.3%200-64%2028.7-64%2064V448c0%2035.3%2028.7%2064%2064%2064H288c35.3%200%2064-28.7%2064-64V256c0-35.3-28.7-64-64-64H64zm256%2064H304c-8.8%200-16-7.2-16-16s7.2-16%2016-16h16c8.8%200%2016%207.2%2016%2016v32c0%208.8-7.2%2016-16%2016H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16H304c-8.8%200-16%207.2-16%2016v64c0%208.8%207.2%2016%2016%2016h16c8.8%200%2016-7.2%2016-16V368c0-8.8-7.2-16-16-16H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16z'%2F%3E%3C%2Fsvg%3E">
+    <meta name="google-site-verification" content="QqWjKu8CZN8lwMXFBGYvm5eQu8ng7sW1MnWpc7Z3IAc" />
+    <meta name="description" content="">
+    <meta name="juicyads-site-verification" content="052a69284d0e2be1e0593281e8d48ea2">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center px-3">
+            <a class="brand-logo text-danger text-decoration-none m-0 p-0" href="index.html"><i class="fas fa-fire"></i> FreePornX</a>
+            
+            <div class="dropdown d-inline">
+                <button class="btn btn-dark" type="button" id="menu-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="menu-toggle">
+                    <li><a class="dropdown-item text-light" href="terms.html">Terms</a></li>
+                    <li><a class="dropdown-item text-light" href="privacy.html">Privacy</a></li>
+                    <li><a class="dropdown-item text-light" href="dmca.html">DMCA</a></li>
+                    <li><a class="dropdown-item text-light" href="2257.html">2257 Compliance</a></li>
+                    <li><a class="dropdown-item text-light" href="contact.html">Contact</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-light" href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mt-4">
+        <div id="dynamic-page-cards-container" class="horizontal-scroll-container mb-4"></div>
+
+        <h4 id="page-title">Loading...</h4>
+        <div class="content-wrapper">
+            <div class="filter-buttons mb-3 text-center">
+                <button class="btn btn-danger active" data-filter="recent">Recent</button>
+                <button class="btn btn-outline-danger" data-filter="mostLiked">Most Liked</button>
+                <button class="btn btn-outline-danger" data-filter="mostViewed">Most Viewed</button>
+            </div>
+            <div id="dynamic-content" class="gallery-container">
+                <div class="loader">
+                    <div class="spinner-border"></div>
+                    <p class="mt-2">Loading Content...</p>
+                </div>
+            </div>
+            <div class="load-more-container mt-4">
+                <button id="loadMoreBtn" class="btn btn-primary" style="display: none;">Load More</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content text-center">
+                <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="modal"></button>
+                <img id="modalImg" src="" alt="" class="modal-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Modal -->
+    <div class="modal fade" id="pdfModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="modal"></button>
+                <div class="pdf-container">
+                    <iframe id="modalPdf"></iframe>
+                    <div class="pdf-overlay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        console.log("Template script started");
+        import { db } from './firebase.js';
+        import { collection, getDocs, doc, setDoc, updateDoc, increment, enableIndexedDbPersistence, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        enableIndexedDbPersistence(db).catch(console.error);
+
+        const API_KEY = "AIzaSyDRdALy4oYz3LWiGuaQ5jB7P6pCYTrvRhA";
+
+        let imgModal, pdfModal;
+        let allFiles = [];
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        let currentFolderId = null;
+        let currentPageType = null;
+        let currentFilter = 'recent'; // Added for filtering
+
+        async function getNavLinks() {
+            const navLinksDocRef = doc(db, "navLinks", "main-menu");
+            const docSnap = await getDoc(navLinksDocRef, { source: 'server' });
+            if (docSnap.exists()) {
+                return docSnap.data().links || [];
+            } else {
+                return [];
+            }
+        }
+
+        // Function to generate a slug from a given string
+        const generateSlug = (text) => {
+            return text
+                .toString()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        };
+
+        async function createDynamicPageCards() {
+            const container = document.getElementById('dynamic-page-cards-container');
+            if (!container) return;
+
+            const navLinks = await getNavLinks();
+
+            const createCard = async (link) => {
+                if (link.folderId) {
+                    const files = await fetchFiles(link.folderId);
+                    if (files.length > 0) {
+                        const firstFile = files[0];
+                        const card = document.createElement('a');
+                        const slugToUse = link.slug || generateSlug(link.name);
+                        card.href = `template.html?type=${link.type}&slug=${slugToUse}`;
+                        card.className = 'card dynamic-page-card text-decoration-none text-dark';
+
+                        const img = document.createElement('img');
+                        img.className = 'card-img-top';
+                        if (firstFile && firstFile.thumbnailLink) {
+                            img.src = firstFile.thumbnailLink;
+                        } else {
+                            img.src = 'https://via.placeholder.com/200x150';
+                        }
+                        img.alt = link.name;
+
+                        const cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+
+                        const cardTitle = document.createElement('h6');
+                        cardTitle.className = 'card-title';
+                        cardTitle.textContent = link.name;
+
+                        cardBody.appendChild(cardTitle);
+                        card.appendChild(img);
+                        card.appendChild(cardBody);
+                        container.appendChild(card);
+                    }
+                }
+            };
+
+            for (const link of navLinks) {
+                await createCard(link);
+                if (link.children && link.children.length > 0) {
+                    for (const child of link.children) {
+                        await createCard(child);
+                    }
+                }
+            }
+        }
+
+        let navLinks = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            imgModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log("DOMContentLoaded listener entered.");
+            currentPageType = urlParams.get('type');
+            const currentSlug = urlParams.get('slug');
+            currentFolderId = urlParams.get('folderId'); // Keep for fallback/old links
+
+            // Set title and meta description dynamically
+            getNavLinks().then(fetchedNavLinks => {
+                navLinks = fetchedNavLinks;
+                const allLinks = [];
+                navLinks.forEach(link => {
+                    allLinks.push(link);
+                    if (link.children) {
+                        allLinks.push(...link.children);
+                    }
+                });
+
+                let currentLink = null;
+                if (currentSlug) {
+                    currentLink = allLinks.find(link => link.slug === currentSlug);
+                }
+                // Only try folderId if slug match failed or slug was not in URL
+                if (!currentLink && currentFolderId) {
+                    currentLink = allLinks.find(link => link.folderId === currentFolderId);
+                }
+
+                console.log("All Nav Links:", navLinks);
+                console.log("Current Slug from URL:", currentSlug);
+                console.log("Current Folder ID from URL:", currentFolderId);
+                console.log("Found Current Link:", currentLink);
+
+                if (currentLink) {
+                    // Use SEO title and description from Firestore if available, otherwise generate them.
+                    const pageTitle = currentLink.seoTitle || `${currentLink.name} - Anime hentai comics`;
+                    const metaDescription = currentLink.metaDescription || `Browse the collection of ${currentLink.name} on Anime hentai comics.`;
+
+                    document.title = pageTitle;
+                    const metaDescriptionTag = document.querySelector('meta[name="description"]');
+                    console.log("Meta Description Tag Found:", metaDescriptionTag);
+                    if (metaDescriptionTag) {
+                        metaDescriptionTag.setAttribute('content', metaDescription);
+                    }
+                    
+                    const pageTitleElement = document.getElementById('page-title');
+                    pageTitleElement.textContent = currentLink.seoTitle || currentLink.name;
+                    pageTitleElement.style.display = 'block'; // Ensure it's visible
+
+                    // Update currentFolderId for loadContent if found by slug
+                    currentFolderId = currentLink.folderId;
+                }
+            });
+
+            if (currentFolderId && currentPageType) {
+                console.log("Calling loadContent with folderId:", currentFolderId, "and type:", currentPageType);
+                loadContent(currentFolderId, currentPageType);
+                createDynamicPageCards();
+            } else {
+                document.getElementById('dynamic-content').innerHTML = '<div class="alert alert-warning">Please provide a valid folder ID or slug and page type in the URL.</div>';
+            }
+
+            document.getElementById('loadMoreBtn').addEventListener('click', () => {
+                currentPage++;
+                renderPage(allFiles, navLinks);
+            });
+
+            // Filter button event listeners
+            document.querySelectorAll('.filter-buttons button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-buttons button').forEach(btn => btn.classList.remove('active', 'btn-danger'));
+                    e.target.classList.add('active', 'btn-danger');
+                    currentFilter = e.target.dataset.filter;
+                    sortAndRenderGallery();
+                });
+            });
+        }); // Added closing brace for DOMContentLoaded
+
+        async function fetchFiles(folderId) {
+            console.log("fetchFiles function entered for folderId:", folderId);
+            let allFiles = [];
+            let pageToken = null;
+            const pageSize = 1000; // Fetch up to 1000 files per request
+
+            do {
+                try {
+                    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,thumbnailLink,createdTime),nextPageToken&orderBy=createdTime desc&pageSize=${pageSize}&pageToken=${pageToken || ''}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    console.log('Google Drive API response for folder', folderId, ':', data); // Log the response
+                    
+                    if (data.files) {
+                        const filesWithFolderId = data.files.map(file => ({ ...file, folderId }));
+                        allFiles = allFiles.concat(filesWithFolderId);
+                    }
+                    
+                    pageToken = data.nextPageToken;
+                } catch (error) {
+                    console.error('Error fetching files from Google Drive for folder', folderId, ':', error);
+                    return []; // Return empty array on error
+                }
+
+            } while (pageToken);
+
+            return allFiles;
+        }
+
+        async function fetchAllCounts(collectionName) {
+            const counts = {};
+            const querySnapshot = await getDocs(collection(db, collectionName));
+            querySnapshot.forEach((doc) => {
+                counts[doc.id] = doc.data().count;
+            });
+            return counts;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        async function loadContent(folderId, type) {
+            console.log("loadContent function entered.");
+            const contentContainer = document.getElementById('dynamic-content');
+            contentContainer.innerHTML = `<div class="loader"><div class="spinner-border"></div><p class="mt-2">Loading Content...</p></div>`;
+
+            try {
+                const [files, likes, views, shares, navLinks] = await Promise.all([
+                    fetchFiles(folderId),
+                    fetchAllCounts(type === 'gallery' ? 'likes' : 'pdf_likes'),
+                    fetchAllCounts(type === 'gallery' ? 'views' : 'pdf_views'),
+                    fetchAllCounts(type === 'gallery' ? 'shares' : 'pdf_shares'),
+                    getNavLinks()
+                ]);
+
+                if (type === 'gallery') {
+                    allFiles = files.filter(file => file.mimeType.startsWith('image'));
+                } else if (type === 'pdf') {
+                    allFiles = files.filter(file => file.mimeType === 'application/pdf');
+                }
+
+                allFiles = allFiles.map(file => ({
+                    ...file,
+                    likes: likes[file.id] || 0,
+                    views: views[file.id] || 0,
+                    shares: shares[file.id] || 0
+                }));
+
+                sortAndRenderGallery(navLinks); // Initial render with default filter
+
+            } catch (err) {
+                contentContainer.innerHTML = `<div class="alert alert-danger">Error loading content.</div>`;
+                console.error(err);
+            }
+        }
+
+        function sortAndRenderGallery(navLinks) {
+            let sortedFiles = [...allFiles];
+            if (currentFilter === 'mostLiked') {
+                sortedFiles.sort((a, b) => b.likes - a.likes);
+            } else if (currentFilter === 'mostViewed') {
+                sortedFiles.sort((a, b) => b.views - a.views);
+            }
+            currentPage = 1; // Reset to first page
+            renderPage(sortedFiles, navLinks);
+        }
+
+        function renderPage(files, navLinks) {
+            const contentContainer = document.getElementById("dynamic-content");
+            const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+            if (currentPage === 1) {
+                contentContainer.innerHTML = '';
+            }
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageFiles = files.slice(startIndex, endIndex);
+
+            if (pageFiles.length === 0 && currentPage === 1) {
+                contentContainer.innerHTML = `<div class="alert alert-warning">No files found.</div>`;
+                loadMoreBtn.style.display = 'none';
+                return;
+            }
+
+            pageFiles.forEach((file, index) => {
+                const item = document.createElement("div");
+                item.className = "gallery-item";
+                item.dataset.fileId = file.id; // Added for view count
+
+                const img = document.createElement("img");
+                img.alt = file.name;
+                img.classList.add('lazy');
+
+                if (file.mimeType.startsWith("image/")) {
+                    img.dataset.src = `https://lh3.googleusercontent.com/d/${file.id}=w800`;
+                    img.onclick = () => openImage(`https://lh3.googleusercontent.com/d/${file.id}=w1600`, file.name);
+                } else { // For PDFs and other file types
+                    if (file.thumbnailLink) {
+                        img.dataset.src = file.thumbnailLink.replace('=s220', '=s800');
+                    } else {
+                        img.dataset.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/800px-PDF_file_icon.svg.png';
+                    }
+                    img.onclick = () => openPdf(file.id);
+                }
+
+                // Like button
+                const likeBtn = document.createElement("div");
+                likeBtn.className = "like-button";
+                likeBtn.innerHTML = `<i class="fas fa-heart"></i> <span class="like-count">${file.likes}</span>`;
+                likeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const countSpan = likeBtn.querySelector('.like-count');
+                    let currentLikes = parseInt(countSpan.textContent);
+                    
+                    if (likeBtn.classList.contains('liked')) {
+                        currentLikes--;
+                        likeBtn.classList.remove('liked');
+                    } else {
+                        currentLikes++;
+                        likeBtn.classList.add('liked', 'animate');
+                        setTimeout(() => likeBtn.classList.remove('animate'), 300);
+                    }
+                    
+                    countSpan.textContent = currentLikes;
+                    file.likes = currentLikes; // Update in the main array too
+                    updateLikeCountInFirebase(file.id, currentPageType, currentLikes);
+                };
+
+                const viewBadge = document.createElement("div");
+                viewBadge.className = "view-count";
+                viewBadge.innerHTML = `<i class="fas fa-eye"></i> <span>${file.views}</span>`;
+
+                // Share Buttons
+                const shareDiv = document.createElement("div");
+                shareDiv.className = "share-buttons";
+                const fb = document.createElement("a");
+                fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentPageType === 'gallery' ? file.thumbnailLink.replace('=s220', '=s1600') : `https://drive.google.com/file/d/${file.id}/preview`)}`;
+                fb.target="_blank"; fb.innerHTML = `<i class="fab fa-facebook-f"></i><span class="share-count-span">${file.shares}</span>`;
+                fb.onclick = () => { incrementShareCount(file.id, currentPageType, fb); };
+
+                const tw = document.createElement("a");
+                tw.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentPageType === 'gallery' ? file.thumbnailLink.replace('=s220', '=s1600') : `https://drive.google.com/file/d/${file.id}/preview`)}`;
+                tw.target="_blank"; tw.innerHTML = `<i class="fab fa-twitter"></i><span class="share-count-span">${file.shares}</span>`;
+                tw.onclick = () => { incrementShareCount(file.id, currentPageType, tw); };
+
+                const wa = document.createElement("a");
+                wa.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(currentPageType === 'gallery' ? file.thumbnailLink.replace('=s220', '=s1600') : `https://drive.google.com/file/d/${file.id}/preview`)}`;
+                wa.target="_blank"; wa.innerHTML = `<i class="fab fa-whatsapp"></i><span class="share-count-span">${file.shares}</span>`;
+                wa.onclick = () => { incrementShareCount(file.id, currentPageType, wa); };
+
+                const tg = document.createElement("a");
+                tg.href = `https://t.me/share/url?url=${encodeURIComponent(currentPageType === 'gallery' ? file.thumbnailLink.replace('=s220', '=s1600') : `https://drive.google.com/file/d/${file.id}/preview`)}`;
+                tg.target="_blank"; tg.innerHTML = `<i class="fab fa-telegram-plane"></i><span class="share-count-span">${file.shares}</span>`;
+                tg.onclick = () => { incrementShareCount(file.id, currentPageType, tg); };
+
+                const genericShare = document.createElement("a");
+                genericShare.className = 'native-share-button';
+                genericShare.href = "#";
+                genericShare.innerHTML = `<i class="fas fa-share-alt"></i><span class="share-count-span">${file.shares}</span>`;
+                genericShare.onclick = (e) => {
+                    e.preventDefault();
+                    const shareUrl = file.mimeType.startsWith("image/") ? file.thumbnailLink.replace('=s220', '=s1600') : `pdf-viewer.html?id=${file.id}`;
+                    if (navigator.share) {
+                        navigator.share({ title: file.name, url: shareUrl })
+                            .then(() => incrementShareCount(file.id, currentPageType, genericShare))
+                            .catch(console.error);
+                    }
+                };
+                shareDiv.append(genericShare);
+
+                const caption = document.createElement("div");
+                caption.className = "caption";
+
+                let captionText = file.name;
+                if (navLinks && file.folderId) {
+                    const allLinks = [];
+                    navLinks.forEach(link => {
+                        allLinks.push(link);
+                        if (link.children) {
+                            allLinks.push(...link.children);
+                        }
+                    });
+                    const matchingLink = allLinks.find(link => link.folderId === file.folderId);
+                    if (matchingLink && matchingLink.captionKeywords && matchingLink.captionKeywords.length > 0) {
+                        captionText = matchingLink.captionKeywords[Math.floor(Math.random() * matchingLink.captionKeywords.length)];
+                    }
+                }
+                caption.textContent = captionText;
+                if (file.mimeType.startsWith("image/")) {
+                    img.alt = captionText;
+                } else {
+                    img.alt = file.name;
+                }
+                console.log("Image alt attribute set to:", img.alt);
+
+                item.appendChild(img);
+                item.appendChild(caption);
+
+                if (!file.mimeType.startsWith("image/")) {
+                    const altText = document.createElement("div");
+                    altText.className = "alt-text";
+                    altText.textContent = img.alt;
+                    item.appendChild(altText);
+                }
+                item.appendChild(likeBtn);
+                item.appendChild(viewBadge);
+                item.appendChild(shareDiv);
+                contentContainer.appendChild(item);
+
+                // Ad insertion (if needed, copy from other pages)
+                if ((index + 1) % 2 === 0) {
+                    const adItem = document.createElement("div");
+                    adItem.className = "gallery-item ad-box";
+                    const script1 = document.createElement('script');
+                    script1.id = 'juicy-in-content-ad';
+                    script1.type = 'text/javascript';
+                    script1.dataset.cfasync = 'false';
+                    script1.async = true;
+                    script1.src = 'https://poweredby.jads.co/js/jads.js';
+
+                    const ins = document.createElement('ins');
+                    ins.id = '1100730';
+                    ins.dataset.width = '300';
+                    ins.dataset.height = '250';
+
+                    const script2 = document.createElement('script');
+                    script2.type = 'text/javascript';
+                    script2.dataset.cfasync = 'false';
+                    script2.async = true;
+                    script2.innerHTML = "(adsbyjuicy = window.adsbyjuicy || []).push({'adzone':1100730});";
+
+                    adItem.appendChild(script1);
+                    adItem.appendChild(ins);
+                    adItem.appendChild(script2);
+
+                    contentContainer.appendChild(adItem);
+                }
+            });
+
+            if (endIndex < files.length) {
+                loadMoreBtn.style.display = 'block';
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+
+            lazyLoadImages();
+        }
+
+        function lazyLoadImages() {
+            const lazyItems = document.querySelectorAll('.gallery-item:not(.observed)');
+            const itemObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const item = entry.target;
+                        item.classList.add('observed'); // Mark as observed
+
+                        const image = item.querySelector('.lazy');
+                        if (image) {
+                            image.src = image.dataset.src;
+                            image.classList.remove('lazy');
+                        }
+                        
+                        const fileId = item.dataset.fileId;
+                        const viewBadge = item.querySelector('.view-count');
+                        if (fileId && viewBadge) {
+                            incrementViewCount(fileId, currentPageType, viewBadge);
+                        }
+                        
+                        observer.unobserve(item);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            lazyItems.forEach(item => {
+                itemObserver.observe(item);
+            });
+        }
+
+        async function updateLikeCountInFirebase(id, type, newCount) {
+            const collectionName = type === 'gallery' ? 'likes' : 'pdf_likes';
+            const docRef = doc(db, collectionName, id);
+            try {
+                await setDoc(docRef, { count: newCount }, { merge: true });
+            } catch (err) {
+                console.error("Error updating like count:", err);
+            }
+        }
+
+        async function incrementShareCount(id, type, shareButton) {
+            const countSpan = shareButton.querySelector('.share-count-span');
+            if (!countSpan) return; 
+            try {
+                const collectionName = type === 'gallery' ? 'shares' : 'pdf_shares';
+                const docRef = doc(db, collectionName, id);
+                const currentCount = parseInt(countSpan.innerText, 10) || 0;
+                countSpan.innerText = currentCount + 1; 
+                await setDoc(docRef, { count: increment(1) }, { merge: true });
+            } catch (err) {
+                console.error("Share count update error:", err);
+                countSpan.innerText = 'E';
+            }
+        }
+
+        async function incrementViewCount(id, type, viewBadge) {
+            const countSpan = viewBadge.querySelector('span');
+            if (!countSpan) return;
+            try {
+                const collectionName = type === 'gallery' ? 'views' : 'pdf_views';
+                const docRef = doc(db, collectionName, id);
+                const currentCount = parseInt(countSpan.innerText, 10) || 0;
+                countSpan.innerText = currentCount + 1; // Optimistic update
+                await setDoc(docRef, { count: increment(1) }, { merge: true });
+            } catch (err) {
+                console.error("View count update error:", err);
+                countSpan.innerText = 'E';
+            }
+        }
+
+        function openImage(src, name) {
+            document.getElementById("modalImg").src = src;
+            document.getElementById("modalImg").alt = name;
+            imgModal.show();
+        }
+
+        function openPdf(id) {
+            document.getElementById("modalPdf").src = `https://drive.google.com/file/d/${id}/preview`;
+            pdfModal.show();
+        }
+    </script>
+    <script src="navbar.js" type="module"></script>
+    <script src="filter.js"></script>
+    <!-- Start JuicyAds Float Ad --><script type="text/javascript">juicy_adzone = '1100731';</script><script type="text/javascript" src="https://poweredby.jads.co/js/jfc.js" charset="utf-8"></script><!-- End JuicyAds Float Ad -->
+
+</body>
+</html>
