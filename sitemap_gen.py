@@ -8,7 +8,7 @@ MY_DOMAIN = "https://freepornx.site" # Sitemap ke links ke liye
 # Data fetch karne ke liye seedha Cloudflare Worker use karenge
 API_URL = "https://sfwalbum.hikeapp-pvtltd.workers.dev/feed" 
 
-MAX_PAGES = 100 # Kitne pages scan karne hain (Badha sakte ho)
+MAX_PAGES = 1000 # Kitne pages scan karne hain (Badha sakte ho)
 LINKS_PER_SITEMAP = 40000 
 
 def fetch_data(page_no):
