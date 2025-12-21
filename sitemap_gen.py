@@ -1,91 +1,114 @@
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
+import time
 import os
 
 # --- CONFIGURATION ---
 MY_DOMAIN = "https://freepornx.site"
-# Hum tere Worker ke API se data lenge
 API_URL = f"{MY_DOMAIN}/feed" 
-MAX_PAGES = 50  # Kitne pages scan karne hain
+# Millions of links ke liye MAX_PAGES ko badha sakte ho (e.g. 500 or 1000)
+MAX_PAGES = 100 
 LINKS_PER_SITEMAP = 40000 
 
-def fetch_videos_from_api(page_no):
-    """Tere Worker se JSON data nikalta hai"""
-    print(f"🔎 Fetching data from your site: Page {page_no}...")
+def fetch_videos_from_worker(page_no):
+    """Tere Worker ke /feed?page=X se data mangta hai"""
+    print(f"🔎 Scanning Page {page_no}...")
     try:
-        # Worker ko call kar rahe hain: /feed?page=1
+        # Load More wala same request format
         params = {'page': page_no, 'cat': 'new'}
-        res = requests.get(API_URL, params=params, timeout=20)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
         
-        if res.status_code != 200:
-            print(f"⚠️ Worker error on page {page_no}: {res.status_code}")
-            return []
-            
-        json_data = res.json()
-        videos = json_data.get('data', [])
+        response = requests.get(API_URL, params=params, headers=headers, timeout=25)
         
+        if response.status_code != 200:
+            print(f"🛑 Worker ne error diya (Status: {response.status_code})")
+            return None
+
+        data = response.json()
+        items = data.get('data', [])
+        
+        if not items or len(items) == 0:
+            print(f"📭 Page {page_no} khali hai. Sab videos khatam!")
+            return None
+
         slugs = []
-        for vid in videos:
-            # video_page_url se slug nikalna
-            # Example: https://freshporno.net/videos/slug-name/ -> slug-name
-            full_url = vid.get('video_page_url', '')
+        for item in items:
+            full_url = item.get('video_page_url', '')
+            # Extracting Slug: freshporno.net/videos/slug-name/ -> slug-name
             if '/videos/' in full_url:
-                slug = full_url.split('/videos/')[1].strip('/')
-                slugs.append(slug)
+                parts = full_url.split('/videos/')
+                if len(parts) > 1:
+                    slug = parts[1].strip('/')
+                    slugs.append(slug)
         
         return slugs
+
     except Exception as e:
-        print(f"❌ Connection error on page {page_no}: {e}")
+        print(f"❌ Error fetching page {page_no}: {e}")
         return []
 
-def create_sitemap_file(slugs, file_no):
-    filename = f"sitemap_{file_no}.xml"
-    urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for slug in slugs:
-        url_tag = ET.SubElement(urlset, "url")
-        loc = ET.SubElement(url_tag, "loc")
-        loc.text = f"{MY_DOMAIN}/video-viewer.html?view={slug}"
-        ET.SubElement(url_tag, "lastmod").text = datetime.now().strftime("%Y-%m-%d")
-    tree = ET.ElementTree(urlset)
-    tree.write(filename, encoding="utf-8", xml_declaration=True)
-    return filename
-
-def create_index_file(sitemap_files):
-    filename = "sitemap_index.xml"
-    index = ET.Element("sitemapindex", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for f in sitemap_files:
-        sitemap = ET.SubElement(index, "sitemap")
-        ET.SubElement(sitemap, "loc").text = f"{MY_DOMAIN}/{f}"
-        ET.SubElement(sitemap, "lastmod").text = datetime.now().strftime("%Y-%m-%d")
-    tree = ET.ElementTree(index)
-    tree.write(filename, encoding="utf-8", xml_declaration=True)
-    print(f"✅ Sitemap Index created with {len(sitemap_files)} files.")
-
 def main():
-    all_slugs = []
+    all_unique_slugs = []
+    
+    # 1. Page by Page Loop (Load More Logic)
     for p in range(1, MAX_PAGES + 1):
-        page_slugs = fetch_videos_from_api(p)
-        if page_slugs:
-            print(f"✅ Received {len(page_slugs)} videos from your Worker (Page {p})")
-            all_slugs.extend(page_slugs)
-        else:
-            print(f"❗ No data on page {p}")
+        slugs = fetch_videos_from_worker(p)
+        
+        if slugs is None: # Agar 404 ya empty mile toh loop break karo
+            break
+            
+        all_unique_slugs.extend(slugs)
+        print(f"✅ Found {len(slugs)} videos on Page {p}")
+        
+        # Site/Worker ko block hone se bachane ke liye 1 sec ka gap
+        time.sleep(1)
 
-    all_slugs = list(set(all_slugs))
-    print(f"📊 Total Unique Videos: {len(all_slugs)}")
+    # Duplicates saaf karo
+    all_unique_slugs = list(set(all_unique_slugs))
+    total_count = len(all_unique_slugs)
+    print(f"📊 Total Unique Videos Collected: {total_count}")
 
-    if not all_slugs:
-        print("❌ Worker se koi data nahi mila. Check karo ki site pe videos dikh rahe hain ya nahi.")
+    if total_count == 0:
+        print("❌ Kuch bhi nahi mila! Worker.js check kar.")
         return
 
+    # 2. Slugs ko 40,000 ke chunks mein divide karke files banana
     sitemap_files = []
-    for i in range(0, len(all_slugs), LINKS_PER_SITEMAP):
-        chunk = all_slugs[i : i + LINKS_PER_SITEMAP]
+    for i in range(0, total_count, LINKS_PER_SITEMAP):
+        chunk = all_unique_slugs[i : i + LINKS_PER_SITEMAP]
         file_no = (i // LINKS_PER_SITEMAP) + 1
-        fname = create_sitemap_file(chunk, file_no)
-        sitemap_files.append(fname)
-    create_index_file(sitemap_files)
+        filename = f"sitemap_{file_no}.xml"
+        
+        # XML Structure
+        urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+        for slug in chunk:
+            url_tag = ET.SubElement(urlset, "url")
+            loc = ET.SubElement(url_tag, "loc")
+            # Tere video-viewer ka asli URL
+            loc.text = f"{MY_DOMAIN}/video-viewer.html?view={slug}"
+            
+            lastmod = ET.SubElement(url_tag, "lastmod")
+            lastmod.text = datetime.now().strftime("%Y-%m-%d")
+        
+        tree = ET.ElementTree(urlset)
+        tree.write(filename, encoding="utf-8", xml_declaration=True)
+        sitemap_files.append(filename)
+        print(f"📄 Created: {filename}")
+
+    # 3. Sitemap Index (Main Baap File) banana
+    index = ET.Element("sitemapindex", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    for f in sitemap_files:
+        sitemap_tag = ET.SubElement(index, "sitemap")
+        loc_tag = ET.SubElement(sitemap_tag, "loc")
+        loc_tag.text = f"{MY_DOMAIN}/{f}"
+        
+        lastmod_tag = ET.SubElement(sitemap_tag, "lastmod")
+        lastmod_tag.text = datetime.now().strftime("%Y-%m-%d")
+    
+    tree = ET.ElementTree(index)
+    tree.write("sitemap_index.xml", encoding="utf-8", xml_declaration=True)
+    print("🚀 MISSION SUCCESS: Sitemap Index Updated!")
 
 if __name__ == "__main__":
     main()
