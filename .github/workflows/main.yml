@@ -25,6 +25,7 @@ jobs:
         run: |
           git config --global user.name "SitemapBot"
           git config --global user.email "bot@freepornx.site"
-          git add sitemap_*.xml sitemap_index.xml
+          # ✅ UPDATE: sitemap.xml add kiya hai, baaki purana waise hi hai
+          git add sitemap.xml sitemap_*.xml sitemap_index.xml || true
           git commit -m "Updated Sitemap Index" || echo "No changes"
           git push
