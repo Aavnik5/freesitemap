@@ -2,7 +2,7 @@ name: Auto Update Sitemap Index
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Har raat 12 baje chalega
+    - cron: '0 0 * * *' # Har raat 12 baje
   workflow_dispatch:
 
 jobs:
@@ -13,19 +13,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          
       - name: Install Dependencies
         run: pip install requests
+        
       - name: Run Generator
         run: python sitemap_gen.py
+        
       - name: Commit & Push
         run: |
           git config --global user.name "SitemapBot"
           git config --global user.email "bot@freepornx.site"
-          # ✅ UPDATE: sitemap.xml add kiya hai, baaki purana waise hi hai
-          git add sitemap.xml sitemap_*.xml sitemap_index.xml || true
-          git commit -m "Updated Sitemap Index" || echo "No changes"
+          # ✅ UPDATE: sitemap.xml aur purani files sabko add kar raha hu
+          git add sitemap.xml sitemap_*.xml || true
+          git commit -m "Updated Sitemap Content" || echo "No changes to commit"
           git push
