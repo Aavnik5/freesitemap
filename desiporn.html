@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Watch Desi Videos on FreePornX - Free Porn Videos XXX Sex, Desi Porn Videos</title>
-    <meta name="description" content="Watch Desi videos on FreePornX now! - FreePornX. free porn videos xxx sex , free porn video desi, free porn xxx desi, desi porn videos,  free desi porn videos, free desi Bhabhi porn videos, free porn Indian sex videos, free India porn, videos, free porn viral desi videos, free viral desi porn videos, free porn videos xxx, free uncle aunty porn videos, free porn desi clips, free porn desi viral clips, free porn nude videos, porn xhamester, free porn xvideos, free xnxx porn videos, free porn stars videos , free porn viral clips, free porn videos Indian desi clips, free porn xxx sex videos, free porn videos, viral clips">
+    <title>Desi Video Player - FreePornX</title>
+    <meta name="description" content="Watch latest viral Desi MMS, Bhabhi videos and Indian porn in HD. Free streaming on FreePornX.">
     <meta name="keywords" content="free porn videos xxx sex , free porn video desi, free porn xxx desi, desi porn videos,  free desi porn videos, free desi Bhabhi porn videos, free porn Indian sex videos, free India porn, videos, free porn viral desi videos, free viral desi porn videos, free porn videos xxx, free uncle aunty porn videos, free porn desi clips, free porn desi viral clips, free porn nude videos, porn xhamester, free porn xvideos, free xnxx porn videos, free porn stars videos , free porn viral clips, free porn videos Indian desi clips, free porn xxx sex videos, free porn videos, viral clips">
     <meta name="robots" content="index, follow">
     
+    <link rel="canonical" href="https://freepornx.site/desiporn.html" />
+
+    <meta property="og:site_name" content="FreePornX">
     <meta property="og:type" content="video.other">
-    <meta property="og:title" content="Watch Desi Videos on FreePornX - Free Porn Videos XXX Sex, Desi Porn Videos">
-    <meta property="og:description" content="Watch Desi videos on FreePornX now! - FreePornX. free porn videos xxx sex , free porn video desi, free porn xxx desi, desi porn videos,  free desi porn videos, free desi Bhabhi porn videos, free porn Indian sex videos, free India porn, videos, free porn viral desi videos, free viral desi porn videos, free porn videos xxx, free uncle aunty porn videos, free porn desi clips, free porn desi viral clips, free porn nude videos, porn xhamester, free porn xvideos, free xnxx porn videos, free porn stars videos , free porn viral clips, free porn videos Indian desi clips, free porn xxx sex videos, free porn videos, viral clips">
-    <meta property="og:image" content="">
+    <meta property="og:title" content="Desi Viral Video">
+    <meta property="og:description" content="Watch this video now on FreePornX.">
+    <meta property="og:image" content="https://freepornx.site/cover.jpg">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -44,6 +47,15 @@
 </head>
 <body>
 
+    <noscript>
+        <div style="padding: 20px; text-align: center;">
+            <h1>Watch Latest Desi Videos</h1>
+            <p>Please enable JavaScript to view this video.</p>
+            <p>Check out our full list of videos:</p>
+            <a href="sitemap_1.xml" style="color: #dc3545; font-size: 18px;">View Video Sitemap</a>
+        </div>
+    </noscript>
+
     <header class="app-header">
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 15px;">
             <a class="brand-logo text-danger text-decoration-none m-0 p-0" href="index.html"><i class="fas fa-fire"></i> FreePornX</a>
@@ -66,11 +78,12 @@
     </header>
 
     <div class="player-wrapper" id="player-box">
-        <video id="player" playsinline controls style="width:100%; aspect-ratio: 16/9;" referrerpolicy="no-referrer"></video>
+        <div id="loader-msg" class="text-muted small">Loading Video Player...</div>
+        <video id="player" playsinline controls style="width:100%; aspect-ratio: 16/9; display: none;" referrerpolicy="no-referrer"></video>
     </div>
 
     <div class="info-box">
-        <h1 class="video-title" id="video-title">Loading...</h1>
+        <h1 class="video-title" id="video-title">Loading Video Details...</h1>
         <div class="d-flex justify-content-end gap-3 text-white small mb-2">
             <span onclick="downloadVideo()" style="cursor:pointer;"><i class="fas fa-download"></i> Download</span>
             <span onclick="shareVideo()" style="cursor:pointer;"><i class="fas fa-share-alt"></i> Share</span>
@@ -81,7 +94,7 @@
     <div class="container mt-2">
         <h6 class="text-white ps-2 mb-3 border-start border-4 border-danger ps-2">Related Videos</h6>
         <div class="related-grid" id="related-container">
-            <div class="text-muted small w-100 text-center">Loading related...</div>
+            <div class="text-muted small w-100 text-center">Loading related content...</div>
         </div>
     </div>
 
@@ -97,7 +110,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     
-    <script type="application/ld+json" id="video-schema">{}</script>
+    <script type="application/ld+json" id="video-schema">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Desi Video",
+      "description": "Watch free desi video online.",
+      "thumbnailUrl": "https://freepornx.site/cover.jpg",
+      "uploadDate": "2024-01-01"
+    }
+    </script>
 
     <script>
         // 🔴 REPLACE WITH YOUR WORKER URL
@@ -131,8 +153,25 @@
 
                 if (!data.success) throw new Error(data.error || "Failed to load");
 
+                // 1. UPDATE UI
+                document.getElementById('loader-msg').style.display = 'none';
+                document.getElementById('player').style.display = 'block';
+
                 currentStreamUrl = data.stream_url;
-                document.getElementById('video-title').innerText = data.title || "Video";
+                
+                // Handle views directly from worker
+                let displayViews = data.views || "Hot";
+                
+                // Handle Duration directly from worker
+                let displayDuration = data.duration || "HD";
+
+                document.getElementById('video-title').innerHTML = `
+                    ${data.title} <br>
+                    <small class="text-light" style="font-size: 12px; opacity: 0.9;">
+                        <i class="fas fa-clock"></i> ${displayDuration} &nbsp;&bull;&nbsp; 
+                        <i class="fas fa-eye"></i> ${displayViews}
+                    </small>
+                `;
 
                 updatePageSEO(data); // 🟢 Call SEO Function
 
@@ -208,16 +247,21 @@
                 const grid = document.getElementById('related-container');
                 if(data.related_videos && data.related_videos.length > 0){
                     grid.innerHTML = data.related_videos.map(v => {
-                        const cleanPath = v.video_page_url.replace('https://spankbang.com/', '');
+                        // Relative link for related videos
+                        let relLink = v.video_page_url;
+                        if(relLink.includes('spankbang.com')) {
+                            const clean = relLink.replace("https://spankbang.com/", "").replace(/\/$/, "");
+                            relLink = `desiporn.html?v=${encodeURIComponent(clean)}`;
+                        }
+
                         return `
-                            <a href="desiporn.html?v=${encodeURIComponent(cleanPath)}" class="related-card">
-                                <div style="position:relative;">
-                                    <img src="${API_WORKER}/proxy?url=${encodeURIComponent(v.thumbnail)}" loading="lazy" alt="${v.title}">
-                                </div>
-                                <div class="related-info"><div class="related-title">${v.title}</div></div>
-                            </a>
-                        `;
-                    }).join('');
+                        <a href="${relLink}" class="related-card">
+                            <div style="position:relative;">
+                                <img src="${API_WORKER}/proxy?url=${encodeURIComponent(v.thumbnail)}" loading="lazy" alt="${v.title}">
+                            </div>
+                            <div class="related-info"><div class="related-title">${v.title}</div></div>
+                        </a>
+                    `}).join('');
                 } else {
                     grid.innerHTML = '<div class="text-muted small">No related videos found.</div>';
                 }
@@ -239,7 +283,7 @@
             const randomDescription = `Watch ${data.title} free. ${selectedKeywords}. Enjoy full HD content on FreePornX.`;
 
             // Update Title
-            document.title = `Watch ${data.title} on FreePornX - ${keywordArray.slice(0, 3).join(', ')}`;
+            document.title = data.title + " - FreePornX";
             
             // Update Meta Description
             const metaDesc = document.querySelector('meta[name="description"]');
@@ -272,7 +316,8 @@
                 "thumbnailUrl": data.thumbnail || "https://freepornx.site/cover-adult.jpg",
                 "uploadDate": new Date().toISOString(),
                 "contentUrl": data.stream_url || "",
-                "embedUrl": window.location.href
+                "embedUrl": window.location.href,
+                "duration": data.duration || "PT5M"
             };
             schemaScript.textContent = JSON.stringify(schemaData);
         }
