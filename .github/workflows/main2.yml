@@ -1,0 +1,38 @@
+name: DesiBot Sitemap Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Roz raat 12 baje chalega
+  workflow_dispatch:      # Manual button bhi milega
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Libraries
+        run: pip install requests
+
+      # 🟢 Yahan Hum Naya Script Run Kar Rahe Hain
+      - name: Run DesiBot Generator
+        run: python desibotsitemap.py
+
+      - name: Commit & Push Sitemap
+        run: |
+          git config --global user.name "DesiBot"
+          git config --global user.email "bot@freepornx.site"
+          # sitemap.xml ko add karo
+          git add sitemap.xml
+          # Commit karo
+          git commit -m "DesiBot: Updated sitemap with new videos" || echo "No changes to commit"
+          # Push karo
+          git push
