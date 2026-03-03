@@ -14,9 +14,20 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Story Viewer | FreePornX">
   <meta name="twitter:description" content="Read story on FreePornX">
+  <meta property="og:image" content="https://freepornx.site/cover-adult.jpg">
+  <meta name="twitter:image" content="https://freepornx.site/cover-adult.jpg">
   <link rel="canonical" href="https://freepornx.site/story-viewer.html">
+  <link rel="preconnect" href="https://doodworker.aav5roy.workers.dev" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <script id="story-schema" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Story Viewer | FreePornX",
+      "mainEntityOfPage": "https://freepornx.site/story-viewer.html"
+    }
+  </script>
   <style>
     body { margin: 0; background: #060606; color: #eee; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
     .app-header {
@@ -132,6 +143,69 @@
       text-align: center;
       color: #dc3545;
     }
+    .skeleton-box {
+      background: #111318;
+      border: 1px solid #242934;
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .skeleton-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      animation: pulse-slide 1.1s linear infinite;
+    }
+    .s-line {
+      height: 11px;
+      border-radius: 999px;
+      background: #2a3140;
+      margin-bottom: 10px;
+    }
+    .s-line.lg { height: 15px; width: 72%; }
+    .s-line.md { width: 100%; }
+    .s-line.sm { width: 58%; margin-bottom: 0; }
+    .related-wrap {
+      margin-top: 14px;
+      background: #101114;
+      border: 1px solid #23252b;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .related-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #f2f5fb;
+    }
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .related-item {
+      display: block;
+      text-decoration: none;
+      color: #d8deea;
+      border: 1px solid #2a2f3b;
+      border-radius: 10px;
+      padding: 10px;
+      background: #151820;
+      line-height: 1.4;
+      font-size: .92rem;
+    }
+    .related-item small {
+      display: block;
+      color: #a6afc0;
+      margin-top: 4px;
+      font-size: .78rem;
+    }
+    @keyframes pulse-slide {
+      to { transform: translateX(100%); }
+    }
   </style>
 </head>
 <body>
@@ -142,7 +216,7 @@
   </header>
 
   <main class="page">
-    <div id="story-root" class="loader"><div class="spinner-border"></div></div>
+    <div id="story-root" class="loader"><div class="skeleton-box"><div class="s-line lg"></div><div class="s-line md"></div><div class="s-line md"></div><div class="s-line sm"></div></div></div>
   </main>
 
   <nav class="bottom-nav">
@@ -180,6 +254,17 @@
       return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
     }
 
+    function buildCanonicalStoryUrl(sourceUrl) {
+      const sid = q("sid");
+      const params = new URLSearchParams();
+      if (sid) params.set("sid", sid);
+      if (isHttpUrl(sourceUrl)) {
+        params.set("url", sourceUrl);
+      }
+      const query = params.toString();
+      return `https://freepornx.site/story-viewer.html${query ? `?${query}` : ""}`;
+    }
+
     async function fetchStoryDetail(storyUrl) {
       const endpoints = [
         `${STORY_WORKER_BASE}/story-detail?url=${encodeURIComponent(storyUrl)}`,
@@ -205,19 +290,39 @@
       throw new Error(lastError);
     }
 
-    function renderStory(data, sourceUrl, noticeText) {
-      const root = document.getElementById("story-root");
-      const title = escapeHtml(data.title || "Story");
-      const date = escapeHtml(formatDate(data.date || "") || data.date || "");
-      const category = escapeHtml(data.category || "");
-      const htmlContent = data.content_html || `<p>${escapeHtml(data.excerpt || "Story preview loaded.")}</p>`;
+    async function fetchStoriesFeed(page = 1) {
+      const endpoints = [
+        `${STORY_WORKER_BASE}/stories-feed?page=${page}&per_page=24`,
+        `${STORY_WORKER_BASE}/kahani-feed?page=${page}&per_page=24`
+      ];
+      for (const endpoint of endpoints) {
+        try {
+          const res = await fetch(endpoint, { cache: "no-store" });
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data && data.status === 200 && data.result && Array.isArray(data.result.stories)) {
+            return data.result.stories;
+          }
+        } catch {
+          // try next endpoint
+        }
+      }
+      return [];
+    }
 
-      const plainText = String(data.paragraphs && data.paragraphs[0] ? data.paragraphs[0] : (data.excerpt || "Read story on FreePornX."));
-      const metaDesc = plainText.length > 150 ? `${plainText.slice(0, 147)}...` : plainText;
-      const fullTitle = `${String(data.title || "Story").trim()} | FreePornX`;
+    function updateStorySeo(payload, sourceUrl) {
+      const plainText = String(
+        payload.paragraphs && payload.paragraphs[0]
+          ? payload.paragraphs[0]
+          : (payload.excerpt || "Read story on FreePornX.")
+      );
+      const metaDesc = plainText.length > 155 ? `${plainText.slice(0, 152)}...` : plainText;
+      const fullTitle = `${String(payload.title || "Story").trim()} | FreePornX`;
+      const canonicalUrl = buildCanonicalStoryUrl(sourceUrl);
       document.title = fullTitle;
+
       const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) canonical.setAttribute("href", window.location.href);
+      if (canonical) canonical.setAttribute("href", canonicalUrl);
       const desc = document.querySelector('meta[name="description"]');
       if (desc) desc.setAttribute("content", metaDesc);
       const ogTitle = document.querySelector('meta[property="og:title"]');
@@ -225,11 +330,40 @@
       const ogDesc = document.querySelector('meta[property="og:description"]');
       if (ogDesc) ogDesc.setAttribute("content", metaDesc);
       const ogUrl = document.querySelector('meta[property="og:url"]');
-      if (ogUrl) ogUrl.setAttribute("content", window.location.href);
+      if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
       const twTitle = document.querySelector('meta[name="twitter:title"]');
       if (twTitle) twTitle.setAttribute("content", fullTitle);
       const twDesc = document.querySelector('meta[name="twitter:description"]');
       if (twDesc) twDesc.setAttribute("content", metaDesc);
+
+      const schemaNode = document.getElementById("story-schema");
+      if (schemaNode) {
+        const published = payload.date ? new Date(payload.date).toISOString() : undefined;
+        const image = payload.thumbnail || "https://freepornx.site/cover-adult.jpg";
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": payload.title || "Story",
+          "description": metaDesc,
+          "url": canonicalUrl,
+          "datePublished": published,
+          "dateModified": published,
+          "image": image,
+          "author": { "@type": "Organization", "name": "FreePornX" },
+          "publisher": { "@type": "Organization", "name": "FreePornX" },
+          "mainEntityOfPage": canonicalUrl
+        };
+        schemaNode.textContent = JSON.stringify(schema);
+      }
+    }
+
+    function renderStory(data, sourceUrl, noticeText) {
+      const root = document.getElementById("story-root");
+      const title = escapeHtml(data.title || "Story");
+      const date = escapeHtml(formatDate(data.date || "") || data.date || "");
+      const category = escapeHtml(data.category || "");
+      const htmlContent = data.content_html || `<p>${escapeHtml(data.excerpt || "Story preview loaded.")}</p>`;
+      updateStorySeo(data, sourceUrl);
 
       root.className = "";
       root.innerHTML = `
@@ -248,7 +382,35 @@
             </div>
           </div>
         </article>
+        <section class="related-wrap">
+          <h2 class="related-title">Related Stories</h2>
+          <div id="related-root" class="related-list">
+            <div class="text-muted small">Loading related stories...</div>
+          </div>
+        </section>
       `;
+    }
+
+    function renderRelatedStories(stories, currentSourceUrl) {
+      const root = document.getElementById("related-root");
+      if (!root) return;
+
+      const usable = (stories || [])
+        .filter((item) => item && isHttpUrl(item.url) && item.url !== currentSourceUrl)
+        .slice(0, 8);
+
+      if (usable.length === 0) {
+        root.innerHTML = `<div class="text-muted small">No related stories available right now.</div>`;
+        return;
+      }
+
+      root.innerHTML = usable.map((item) => {
+        const sid = item && item.story_id ? `sid=${encodeURIComponent(item.story_id)}&` : "";
+        const href = `story-viewer.html?${sid}url=${encodeURIComponent(item.url)}&title=${encodeURIComponent(item.title || "")}&excerpt=${encodeURIComponent(item.excerpt || "")}&category=${encodeURIComponent(item.category || "")}&date=${encodeURIComponent(item.date || "")}`;
+        const title = escapeHtml(item.title || "Story");
+        const cat = escapeHtml(item.category || "Story");
+        return `<a class="related-item" href="${href}">${title}<small>${cat}</small></a>`;
+      }).join("");
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -269,12 +431,21 @@
       try {
         const detail = await fetchStoryDetail(sourceUrl);
         renderStory(detail, sourceUrl, "");
+        const relatedStories = await fetchStoriesFeed(1);
+        const byCategory = relatedStories.filter((item) => {
+          const catA = String(item && item.category ? item.category : "").trim().toLowerCase();
+          const catB = String(detail && detail.category ? detail.category : "").trim().toLowerCase();
+          return catA && catB && catA === catB;
+        });
+        renderRelatedStories(byCategory.length ? byCategory : relatedStories, sourceUrl);
       } catch (err) {
         renderStory(
           fallback,
           sourceUrl,
           "Full story load nahi hua. Abhi preview dikh raha hai, source button se full page khol sakte ho."
         );
+        const relatedStories = await fetchStoriesFeed(1);
+        renderRelatedStories(relatedStories, sourceUrl);
       }
     });
   </script>

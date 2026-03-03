@@ -3,6 +3,7 @@ $ErrorActionPreference = "Stop"
 $baseWorker = "https://doodworker.aav5roy.workers.dev"
 $maxPages = 12
 $stories = @()
+$today = (Get-Date).ToString("yyyy-MM-dd")
 
 for ($page = 1; $page -le $maxPages; $page++) {
   $endpoint = "$baseWorker/kahani-feed?page=$page&per_page=24"
@@ -32,7 +33,7 @@ $lines += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 foreach ($url in $dedupe.Keys) {
   $story = $dedupe[$url]
   $viewerUrl = "https://freepornx.site/story-viewer.html?url=" + [System.Uri]::EscapeDataString([string]$story.url)
-  $lastmod = "2026-03-03"
+  $lastmod = $today
   if ($story.date) {
     try { $lastmod = ([datetime]$story.date).ToString("yyyy-MM-dd") } catch {}
   }
@@ -47,4 +48,12 @@ foreach ($url in $dedupe.Keys) {
 
 $lines += "</urlset>"
 Set-Content -Path "sitemap_stories.xml" -Value $lines -Encoding UTF8
-Write-Output "Generated sitemap_stories.xml with $($dedupe.Count) URLs"
+
+foreach ($mapPath in @("sitemap.xml", "sitemap_index.xml")) {
+  if (-not (Test-Path $mapPath)) { continue }
+  $raw = Get-Content -Path $mapPath -Raw
+  $updated = [regex]::Replace($raw, "<lastmod>[^<]+</lastmod>", "<lastmod>$today</lastmod>")
+  Set-Content -Path $mapPath -Value $updated -Encoding UTF8
+}
+
+Write-Output "Generated sitemap_stories.xml with $($dedupe.Count) URLs and refreshed sitemap lastmod to $today"

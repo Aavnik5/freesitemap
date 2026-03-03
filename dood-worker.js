@@ -1,4 +1,7 @@
 const KAHANI_BASE = "https://www.freesexkahani.com";
+const WORKER_VERSION = "2026-03-03-phase6";
+const FETCH_TIMEOUT_MS = 10000;
+const LIST_CACHE_CONTROL = "public, max-age=120, s-maxage=300, stale-while-revalidate=900";
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
 
@@ -17,6 +20,7 @@ function json(payload, status = 200, cache = "public, max-age=120") {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": cache,
+      "X-Worker-Version": WORKER_VERSION,
       ...corsHeaders()
     }
   });
@@ -31,31 +35,80 @@ function absUrl(origin, pathOrUrl) {
 }
 
 async function fetchText(url) {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": USER_AGENT,
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9"
-    }
-  });
+  const res = await fetchWithTimeout(
+    url,
+    {
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9"
+      }
+    },
+    FETCH_TIMEOUT_MS
+  );
   if (!res.ok) {
     throw new Error(`Upstream status ${res.status}`);
   }
   return res.text();
 }
 
+async function fetchWithTimeout(url, init = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (err && err.name === "AbortError") {
+      throw new Error(`Upstream timeout after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchReaderMirror(url) {
   const mirrorUrl = `https://r.jina.ai/http://${url.replace(/^https?:\/\//i, "")}`;
-  const res = await fetch(mirrorUrl, {
-    headers: {
-      "User-Agent": USER_AGENT,
-      Accept: "text/plain,text/markdown;q=0.9,*/*;q=0.8"
-    }
-  });
+  const res = await fetchWithTimeout(
+    mirrorUrl,
+    {
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept: "text/plain,text/markdown;q=0.9,*/*;q=0.8"
+      }
+    },
+    FETCH_TIMEOUT_MS
+  );
   if (!res.ok) {
     throw new Error(`Reader mirror status ${res.status}`);
   }
   return res.text();
+}
+
+function slugify(input) {
+  const base = cleanText(input || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return base || "story";
+}
+
+function tinyHash(input) {
+  let hash = 2166136261;
+  const text = String(input || "");
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function buildStoryId(title, url) {
+  const slug = slugify(title).slice(0, 52);
+  const hash = tinyHash(url).slice(0, 8);
+  return `${slug}-${hash}`;
 }
 
 function safeCodePoint(num) {
@@ -136,8 +189,11 @@ function extractStories(html, perPage = 24) {
 
     const dateMatch = block.match(/<time[^>]*datetime=["']([^"']+)["']/i);
     const categoryMatch = block.match(/rel=["'][^"']*category tag[^"']*["'][^>]*>([^<]+)<\/a>/i);
+    const storyId = buildStoryId(title, url);
 
     stories.push({
+      story_id: storyId,
+      story_slug: storyId,
       title,
       url,
       excerpt: excerpt || "Read full story.",
@@ -202,8 +258,11 @@ function extractStoryDetail(html, storyUrl) {
   );
   const paragraphs = buildStoryParagraphs(article);
   const content_html = paragraphs.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
+  const storyId = buildStoryId(title || "story", storyUrl);
 
   return {
+    story_id: storyId,
+    story_slug: storyId,
     url: storyUrl,
     title: title || "Story",
     date,
@@ -229,8 +288,11 @@ function extractStoryFromReaderMirror(raw, storyUrl) {
   const content_html = paragraphs.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
   const title = cleanText(titleMatch ? titleMatch[1] : "");
   const date = cleanText(publishedMatch ? publishedMatch[1] : "");
+  const storyId = buildStoryId(title || "story", storyUrl);
 
   return {
+    story_id: storyId,
+    story_slug: storyId,
     url: storyUrl,
     title: title || "Story",
     date,
@@ -239,6 +301,37 @@ function extractStoryFromReaderMirror(raw, storyUrl) {
     paragraphs,
     content_html
   };
+}
+
+async function checkUpstreamHealth() {
+  const started = Date.now();
+  try {
+    const res = await fetchWithTimeout(
+      kahaniPageUrl(1),
+      {
+        headers: {
+          "User-Agent": USER_AGENT,
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
+      },
+      9000
+    );
+    const html = await res.text();
+    return {
+      ok: res.ok,
+      upstream_status: res.status,
+      challenge_detected: isChallengePage(html),
+      latency_ms: Date.now() - started
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      upstream_status: 0,
+      challenge_detected: false,
+      latency_ms: Date.now() - started,
+      error: err && err.message ? err.message : "health check failed"
+    };
+  }
 }
 
 export default {
@@ -255,11 +348,13 @@ export default {
         {
           ok: true,
           message: "Stories worker is running",
+          worker_version: WORKER_VERSION,
           endpoints: [
             "/kahani-feed?page=1&per_page=24",
             "/stories-feed?page=1&per_page=24",
             "/story-detail?url=ENCODED_STORY_URL",
-            "/kahani-detail?url=ENCODED_STORY_URL"
+            "/kahani-detail?url=ENCODED_STORY_URL",
+            "/health"
           ]
         },
         200,
@@ -267,7 +362,25 @@ export default {
       );
     }
 
+    if (path === "/health" || path === "/healthz" || path === "/metrics") {
+      const upstream = await checkUpstreamHealth();
+      const healthy = Boolean(upstream.ok) && !upstream.challenge_detected;
+      return json(
+        {
+          status: healthy ? 200 : 503,
+          ok: healthy,
+          worker_version: WORKER_VERSION,
+          checked_at: new Date().toISOString(),
+          source: KAHANI_BASE,
+          upstream
+        },
+        healthy ? 200 : 503,
+        "no-store"
+      );
+    }
+
     if (path === "/story-detail" || path === "/kahani-detail") {
+      const detailStart = Date.now();
       const rawStoryUrl = (url.searchParams.get("url") || "").trim();
       if (!rawStoryUrl || !isAllowedStoryUrl(rawStoryUrl)) {
         return json({ status: 400, msg: "Invalid story URL" }, 400, "no-store");
@@ -279,7 +392,17 @@ export default {
         if (!isChallengePage(html)) {
           const detail = extractStoryDetail(html, rawStoryUrl);
           if (detail.title && detail.paragraphs.length > 0) {
-            return json({ status: 200, msg: "OK", result: detail }, 200, "no-store");
+            return json(
+              {
+                status: 200,
+                msg: "OK",
+                result: detail,
+                source_mode: "direct",
+                timing_ms: Date.now() - detailStart
+              },
+              200,
+              "no-store"
+            );
           }
         } else {
           directError = "Source challenge page returned";
@@ -299,7 +422,8 @@ export default {
             status: 200,
             msg: "OK",
             result: mirrorDetail,
-            source_mode: "reader_mirror"
+            source_mode: "reader_mirror",
+            timing_ms: Date.now() - detailStart
           },
           200,
           "no-store"
@@ -307,7 +431,11 @@ export default {
       } catch (err) {
         const mirrorError = err && err.message ? err.message : "Mirror fetch failed";
         return json(
-          { status: 502, msg: `Story detail failed. direct=${directError || "na"} mirror=${mirrorError}` },
+          {
+            status: 502,
+            msg: `Story detail failed. direct=${directError || "na"} mirror=${mirrorError}`,
+            timing_ms: Date.now() - detailStart
+          },
           502,
           "no-store"
         );
@@ -322,6 +450,7 @@ export default {
     const rawPerPage = parseInt(url.searchParams.get("per_page") || "24", 10);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
     const perPage = Number.isFinite(rawPerPage) && rawPerPage > 0 ? Math.min(rawPerPage, 50) : 24;
+    const feedStart = Date.now();
 
     try {
       const html = await fetchText(kahaniPageUrl(page));
@@ -349,13 +478,23 @@ export default {
             next_page: nextUrl ? page + 1 : null,
             next_url: nextUrl,
             stories
-          }
+          },
+          timing_ms: Date.now() - feedStart,
+          worker_version: WORKER_VERSION
         },
         200,
-        "public, max-age=180"
+        LIST_CACHE_CONTROL
       );
     } catch (err) {
-      return json({ status: 502, msg: err.message || "Kahani feed failed" }, 502, "no-store");
+      return json(
+        {
+          status: 502,
+          msg: err.message || "Kahani feed failed",
+          timing_ms: Date.now() - feedStart
+        },
+        502,
+        "no-store"
+      );
     }
   }
 };

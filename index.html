@@ -62,12 +62,30 @@
     }
     </script>
     <meta name="6a97888e-site-verification" content="cec8799cf1dd48567a95406f5f0849c6">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://a.magsrv.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; background-color: #000; height: 100%; overflow: hidden; color: white; font-family: system-ui, sans-serif; }
-        .main-view { height: 100%; width: 100%; padding-top: 70px; padding-bottom: 60px; position: relative; overflow-y: auto; overscroll-behavior-y: contain; }
+        :root {
+            --bg-0: #050506;
+            --bg-1: #0d0f13;
+            --bg-2: #161a22;
+            --line: #2a2f3a;
+            --line-soft: #232730;
+            --text-0: #f5f7fb;
+            --text-1: #d1d6df;
+            --text-2: #98a1b2;
+            --brand: #ff3b57;
+            --brand-soft: #ff6a7f;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+        body, html { margin: 0; padding: 0; background: radial-gradient(120% 120% at 50% 0%, #121620 0%, #07080b 42%, #040405 100%); height: 100%; overflow: hidden; color: var(--text-0); font-family: "Segoe UI", Tahoma, Verdana, sans-serif; }
+        .main-view { height: 100%; width: 100%; padding-top: 70px; padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); position: relative; overflow-y: auto; overscroll-behavior-y: contain; }
         #pull-to-refresh-indicator {
           position: absolute;
           top: -60px;
@@ -119,14 +137,15 @@
         .grid-view { display: none; padding: 10px; }
 
         /* HEADER */
-        .app-header { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); z-index: 1000; padding-top: 10px; border-bottom: 1px solid #333; backdrop-filter: blur(5px); }
-        .brand-logo { font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+        .app-header { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(7, 8, 11, 0.96) 0%, rgba(7, 8, 11, 0.82) 100%); z-index: 1000; padding-top: 10px; border-bottom: 1px solid var(--line-soft); backdrop-filter: blur(8px); }
+        .brand-logo { font-size: 18px; font-weight: 900; letter-spacing: 0.4px; }
         
         /* CHIPS */
         .category-scroll { display: flex; overflow-x: auto; padding: 10px 15px; gap: 10px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-scroll::-webkit-scrollbar { display: none; }
-        .chip { background: #333; border: 1px solid #444; color: #ccc; padding: 6px 16px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer; }
-        .chip.active { background: #dc3545; color: white; border-color: #dc3545; }
+        .chip { background: rgba(255,255,255,0.06); border: 1px solid var(--line); color: var(--text-1); padding: 7px 15px; border-radius: 999px; font-size: 13px; white-space: nowrap; cursor: pointer; transition: transform .15s ease, background-color .15s ease, border-color .15s ease; }
+        .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); }
+        .chip.active { background: linear-gradient(135deg, var(--brand), var(--brand-soft)); color: #fff; border-color: transparent; }
 
         /* SHORTS VIEW */
         #shorts-view { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; display: block; scroll-behavior: smooth; }
@@ -271,12 +290,20 @@
         }
 
         .article-card {
-            background-color: #1a1a1a;
-            border-radius: 8px;
+            background: linear-gradient(160deg, rgba(23, 26, 34, 0.92), rgba(15, 18, 24, 0.92));
+            border-radius: var(--radius-md);
             height: auto;
             display: block;
-            border: 1px solid #333;
+            border: 1px solid var(--line);
             overflow: hidden;
+            content-visibility: auto;
+            contain-intrinsic-size: 240px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+        }
+        .article-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
         }
         .article-card .article-content-wrapper {
             padding: 15px;
@@ -286,25 +313,27 @@
         }
         .article-card .title {
             font-size: 1rem;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--text-0);
+            margin-bottom: 8px;
+            line-height: 1.35;
         }
         .article-card .snippet {
             font-size: 0.9rem;
-            color: #ccc;
+            color: var(--text-1);
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             flex-grow: 1;
+            line-height: 1.5;
         }
 
         /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); background: rgba(5, 6, 8, 0.96); border-top: 1px solid var(--line-soft); display: flex; justify-content: space-around; align-items: center; z-index: 1001; backdrop-filter: blur(8px); }
                 .nav-btn {
-                    color: #666;
+                    color: #768193;
                     font-size: 10px;
                     text-align: center;
                     cursor: pointer;
@@ -314,11 +343,47 @@
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                }        .nav-btn.active { color: #dc3545; }
+                }
+                .nav-btn.active { color: var(--brand); }
         .nav-btn i { font-size: 20px; margin-bottom: 4px; }
 
         /* HELPERS */
-        .loader { text-align: center; padding-top: 5rem; color: #dc3545; }
+        .loader { text-align: center; padding-top: 5rem; color: var(--brand); }
+        .stories-skeleton {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--line);
+            padding: 16px;
+            background: var(--bg-1);
+            overflow: hidden;
+            position: relative;
+        }
+        .stories-skeleton::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: skeleton-sheen 1.1s linear infinite;
+        }
+        .skeleton-line {
+            height: 11px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            background: #2a2f3a;
+        }
+        .skeleton-line.lg { height: 14px; width: 76%; }
+        .skeleton-line.md { width: 95%; }
+        .skeleton-line.sm { width: 62%; margin-bottom: 0; }
+        .ad-slot-fixed {
+            min-height: 292px;
+            display: grid;
+            align-content: flex-start;
+            background: #101318;
+            border: 1px dashed #2f3642;
+        }
+        @keyframes skeleton-sheen {
+            to { transform: translateX(100%); }
+        }
         #debug-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 10px; border: 1px solid red; z-index: 9999; display: none; text-align: center; width: 80%; }
 
         /* VIDEO GRID LAYOUT - SINGLE COLUMN LIST */
@@ -327,7 +392,7 @@
             flex-direction: column;
             gap: 15px; /* Gap between list items */
             padding: 10px;
-            background-color: #0f0f0f;
+            background-color: transparent;
         }
 
         /* CARD DESIGN - ROW LAYOUT */
@@ -579,6 +644,11 @@
         let isGlobalMuted = true;
         let db;
         let currentVideoPath = null; // New global variable to store custom video paths
+        let latestStoriesForSeo = [];
+        const STORY_AD_EVERY = 2;
+        const STORY_AD_SESSION_CAP = 10;
+        const STORY_AD_SESSION_KEY = 'fpx_story_ads_served';
+        let storiesAdsServed = 0;
 
 
         // --- NEW: Pagination state for Grids (Pics/Comics) ---
@@ -598,6 +668,114 @@
             refreshing: false,
             threshold: 80 // How far to pull in pixels
         };
+
+        function initializeStoryAdSession() {
+            try {
+                const fromStorage = parseInt(sessionStorage.getItem(STORY_AD_SESSION_KEY) || '0', 10);
+                storiesAdsServed = Number.isFinite(fromStorage) && fromStorage >= 0 ? fromStorage : 0;
+            } catch {
+                storiesAdsServed = 0;
+            }
+        }
+
+        function canInsertStoryAd() {
+            return storiesAdsServed < STORY_AD_SESSION_CAP;
+        }
+
+        function markStoryAdServed() {
+            storiesAdsServed += 1;
+            try {
+                sessionStorage.setItem(STORY_AD_SESSION_KEY, String(storiesAdsServed));
+            } catch {
+                // ignore session storage write failures
+            }
+        }
+
+        function serveAdProviderLater() {
+            const run = () => {
+                try {
+                    (window.AdProvider = window.AdProvider || []).push({ serve: {} });
+                } catch (e) {
+                    console.error('Ad serve failed:', e);
+                }
+            };
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(run, { timeout: 700 });
+            } else {
+                setTimeout(run, 80);
+            }
+        }
+
+        function buildStorySkeleton(count = 6) {
+            return new Array(count).fill(0).map(() => `
+                <div class="stories-skeleton" aria-hidden="true">
+                    <div class="skeleton-line lg"></div>
+                    <div class="skeleton-line md"></div>
+                    <div class="skeleton-line md"></div>
+                    <div class="skeleton-line sm"></div>
+                </div>
+            `).join('');
+        }
+
+        function initBaselineVitals() {
+            if (!('PerformanceObserver' in window)) return;
+            const snapshot = {
+                page: window.location.pathname + window.location.search,
+                ts: new Date().toISOString(),
+                lcp: 0,
+                cls: 0,
+                inp: 0
+            };
+
+            try {
+                const lcpObserver = new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const last = entries[entries.length - 1];
+                    if (last) snapshot.lcp = Math.round(last.startTime);
+                });
+                lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+            } catch {
+                // ignore unsupported LCP observer
+            }
+
+            try {
+                const clsObserver = new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            snapshot.cls += entry.value;
+                        }
+                    }
+                });
+                clsObserver.observe({ type: 'layout-shift', buffered: true });
+            } catch {
+                // ignore unsupported CLS observer
+            }
+
+            try {
+                const inpObserver = new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        const value = Math.round(entry.duration || entry.processingEnd - entry.startTime || 0);
+                        if (value > snapshot.inp) snapshot.inp = value;
+                    }
+                });
+                inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 40 });
+            } catch {
+                // ignore unsupported INP observer
+            }
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState !== 'hidden') return;
+                snapshot.cls = Number(snapshot.cls.toFixed(4));
+                try {
+                    localStorage.setItem('fpx_baseline_vitals_last', JSON.stringify(snapshot));
+                } catch {
+                    // ignore write failures
+                }
+                if (snapshot.lcp || snapshot.cls || snapshot.inp) {
+                    console.info('FPX baseline vitals', snapshot);
+                }
+            });
+        }
 
         // --- Pull To Refresh (PTR) Handlers ---
         function ptrOnTouchStart(e) {
@@ -660,10 +838,12 @@
             ptr.element.removeEventListener('touchend', ptrOnTouchEnd);
         }
         
-        document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
+    initializeStoryAdSession();
+    initBaselineVitals();
     // Pull-to-refresh init
     ptr.element = document.querySelector('.main-view');
     ptr.indicator = document.getElementById('pull-to-refresh-indicator');
@@ -771,6 +951,30 @@ function updateMetaForTab(tab, category = '') {
         description = "Read latest Hindi sex stories from your story site feed in one place.";
         keywords = "hindi sex stories, antarvasna stories, desi kahani, adult stories";
         canonicalUrl = `${baseUrl}?tab=stories`;
+        const itemListElement = (latestStoriesForSeo || [])
+            .slice(0, 10)
+            .map((item, idx) => {
+                const itemUrl = item && item.url ? `https://freepornx.site/story-viewer.html?url=${encodeParam(item.url)}` : canonicalUrl;
+                return {
+                    "@type": "ListItem",
+                    "position": idx + 1,
+                    "url": itemUrl,
+                    "name": item && item.title ? item.title : `Story ${idx + 1}`
+                };
+            });
+        schema = {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": title,
+            "description": description,
+            "url": canonicalUrl,
+            "mainEntity": {
+                "@type": "ItemList",
+                "itemListOrder": "https://schema.org/ItemListOrderDescending",
+                "numberOfItems": itemListElement.length,
+                "itemListElement": itemListElement
+            }
+        };
     } else if (tab === 'gifs') {
         title = "Hot GIFs & Animated Clips | FreePornX";
         description = "Explore trending animated GIF clips updated daily.";
@@ -1194,6 +1398,55 @@ function updateMetaForTab(tab, category = '') {
             loadVideos(true);
         }
 
+        function buildStoryHref(storyUrl, item) {
+            const parts = [`url=${encodeParam(storyUrl)}`];
+            if (item && item.story_id) parts.push(`sid=${encodeParam(item.story_id)}`);
+            if (item && item.title) parts.push(`title=${encodeParam(item.title)}`);
+            if (item && item.excerpt) parts.push(`excerpt=${encodeParam(item.excerpt)}`);
+            if (item && item.category) parts.push(`category=${encodeParam(item.category)}`);
+            if (item && item.date) parts.push(`date=${encodeParam(item.date)}`);
+            return `story-viewer.html?${parts.join('&')}`;
+        }
+
+        function createStoryCard(item) {
+            const storyUrl = String(item.url || '').trim();
+            if (!isHttpUrl(storyUrl)) return null;
+
+            const title = escapeHtml(item.title || 'Untitled Story');
+            const snippet = escapeHtml(item.excerpt || 'Read full story.');
+            const category = escapeHtml(item.category || 'Story');
+            const date = escapeHtml(item.date || '');
+            const href = buildStoryHref(storyUrl, item);
+
+            const card = document.createElement('article');
+            card.className = 'article-card';
+            card.innerHTML = `
+                <a class="article-link" href="${href}">
+                    <div class="article-content-wrapper">
+                        <div class="title">${title}</div>
+                        <div class="snippet">${snippet}</div>
+                        <div class="video-meta mt-2">
+                            <span><i class="fas fa-book-open"></i>${category}</span>
+                            ${date ? `<span><i class="far fa-calendar-alt"></i>${date}</span>` : ''}
+                        </div>
+                    </div>
+                </a>
+            `;
+            return card;
+        }
+
+        function createStoryAdCard() {
+            const adContainer = document.createElement('article');
+            adContainer.className = 'article-card ad-item ad-slot-fixed';
+            adContainer.innerHTML = `
+                <div class="article-content-wrapper" style="padding:12px 10px;">
+                    <h6 class="text-muted mb-2" style="font-size:10px;">Advertisement</h6>
+                    <ins class="eas6a97888e10" data-zoneid="5792418"></ins>
+                </div>
+            `;
+            return adContainer;
+        }
+
         async function loadStories(isLoadMore = false) {
             if (isStoriesLoading) return;
             isStoriesLoading = true;
@@ -1206,7 +1459,7 @@ function updateMetaForTab(tab, category = '') {
             }
 
             if (!isLoadMore) {
-                container.innerHTML = '<div class="loader"><div class="spinner-border"></div></div>';
+                container.innerHTML = buildStorySkeleton(5);
                 loadMoreContainer.innerHTML = '';
             } else {
                 const btn = document.getElementById('stories-load-more-btn');
@@ -1214,10 +1467,20 @@ function updateMetaForTab(tab, category = '') {
             }
 
             try {
-                let res = await fetch(`${STORIES_API_URL}?page=${storiesCurrentPage}&per_page=24`);
+                const startedAt = performance.now();
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 10000);
+                let res = await fetch(`${STORIES_API_URL}?page=${storiesCurrentPage}&per_page=24`, {
+                    signal: controller.signal,
+                    cache: 'no-store'
+                });
                 if (res.status === 404 && STORIES_API_URL.includes('/stories-feed')) {
-                    res = await fetch(`${STORIES_API_URL.replace('/stories-feed', '/kahani-feed')}?page=${storiesCurrentPage}&per_page=24`);
+                    res = await fetch(`${STORIES_API_URL.replace('/stories-feed', '/kahani-feed')}?page=${storiesCurrentPage}&per_page=24`, {
+                        signal: controller.signal,
+                        cache: 'no-store'
+                    });
                 }
+                clearTimeout(timeout);
                 if (!res.ok) {
                     throw new Error(`Stories API responded with status ${res.status}`);
                 }
@@ -1230,6 +1493,7 @@ function updateMetaForTab(tab, category = '') {
                 const stories = json.result.stories || [];
                 const hasNextPage = Boolean(json.result.has_next);
                 let insertedAds = 0;
+                const renderFragment = document.createDocumentFragment();
 
                 if (!isLoadMore) {
                     container.innerHTML = '';
@@ -1245,63 +1509,29 @@ function updateMetaForTab(tab, category = '') {
                     return;
                 }
 
+                if (storiesCurrentPage === 1) {
+                    latestStoriesForSeo = stories.slice(0, 20);
+                    if (currentTab === 'stories') {
+                        updateMetaForTab('stories');
+                    }
+                }
+
                 stories.forEach((item) => {
-                    const storyUrl = String(item.url || '').trim();
-                    if (!isHttpUrl(storyUrl)) return;
-
-                    const title = escapeHtml(item.title || 'Untitled Story');
-                    const snippet = escapeHtml(item.excerpt || 'Read full story.');
-                    const category = escapeHtml(item.category || 'Story');
-                    const date = escapeHtml(item.date || '');
-
-                    const card = document.createElement('div');
-                    card.className = 'article-card';
-                    card.onclick = () => {
-                        window.location.href = `story-viewer.html?url=${encodeParam(storyUrl)}`;
-                    };
-                    card.innerHTML = `
-                        <div class="article-content-wrapper">
-                            <div class="title">${title}</div>
-                            <div class="snippet">${snippet}</div>
-                            <div class="video-meta mt-2">
-                                <span><i class="fas fa-book-open"></i>${category}</span>
-                                ${date ? `<span><i class="far fa-calendar-alt"></i>${date}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
+                    const card = createStoryCard(item);
+                    if (!card) return;
+                    renderFragment.appendChild(card);
                     storiesRenderCount++;
 
-                    // Show 1 ad after every 2 stories
-                    if (storiesRenderCount % 2 === 0) {
-                        const adContainer = document.createElement('div');
-                        adContainer.className = 'article-card ad-item';
-                        adContainer.style.padding = '16px 12px';
-                        adContainer.style.background = '#111';
-                        adContainer.style.textAlign = 'center';
-
-                        const adHeading = document.createElement('h6');
-                        adHeading.className = 'text-muted mb-2';
-                        adHeading.style.fontSize = '10px';
-                        adHeading.textContent = 'Advertisement';
-                        adContainer.appendChild(adHeading);
-
-                        const adIns = document.createElement('ins');
-                        adIns.className = 'eas6a97888e10';
-                        adIns.dataset.zoneid = '5792418';
-                        adContainer.appendChild(adIns);
-
-                        container.appendChild(adContainer);
+                    if (storiesRenderCount % STORY_AD_EVERY === 0 && canInsertStoryAd()) {
+                        renderFragment.appendChild(createStoryAdCard());
+                        markStoryAdServed();
                         insertedAds++;
                     }
                 });
+                container.appendChild(renderFragment);
 
                 if (insertedAds > 0) {
-                    try {
-                        (window.AdProvider = window.AdProvider || []).push({ "serve": {} });
-                    } catch (e) {
-                        console.error("Stories ad serving error:", e);
-                    }
+                    serveAdProviderLater();
                 }
 
                 if (hasNextPage) {
@@ -1309,6 +1539,13 @@ function updateMetaForTab(tab, category = '') {
                     storiesCurrentPage++;
                 } else {
                     loadMoreContainer.innerHTML = '<div class="text-center text-muted p-3">No more stories to load.</div>';
+                }
+
+                const renderMs = Math.round(performance.now() - startedAt);
+                try {
+                    localStorage.setItem('fpx_story_feed_last_ms', String(renderMs));
+                } catch {
+                    // ignore write failures
                 }
             } catch (err) {
                 console.error('Error loading stories:', err);
