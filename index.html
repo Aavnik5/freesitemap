@@ -566,6 +566,7 @@
         let currentPage = 1;
         let videoCurrentPage = 1;
         let storiesCurrentPage = 1;
+        let storiesRenderCount = 0;
         let desiCurrentPage = 1;
         let currentDesiCategory = 'desi';
         let currentDesiFilter = 'new';
@@ -858,6 +859,7 @@ function updateMetaForTab(tab, category = '') {
             document.querySelector('.main-view').style.overflowY = 'auto';
             document.getElementById('categoryContainer').innerHTML = '';
             storiesCurrentPage = 1;
+            storiesRenderCount = 0;
             loadStories();
         } else if (tab === 'gifs') {
             document.querySelector('.main-view').style.overflowY = 'auto';
@@ -1227,8 +1229,12 @@ function updateMetaForTab(tab, category = '') {
 
                 const stories = json.result.stories || [];
                 const hasNextPage = Boolean(json.result.has_next);
+                let insertedAds = 0;
 
-                if (!isLoadMore) container.innerHTML = '';
+                if (!isLoadMore) {
+                    container.innerHTML = '';
+                    storiesRenderCount = 0;
+                }
 
                 if (stories.length === 0) {
                     if (!isLoadMore) {
@@ -1264,7 +1270,39 @@ function updateMetaForTab(tab, category = '') {
                         </div>
                     `;
                     container.appendChild(card);
+                    storiesRenderCount++;
+
+                    // Show 1 ad after every 2 stories
+                    if (storiesRenderCount % 2 === 0) {
+                        const adContainer = document.createElement('div');
+                        adContainer.className = 'article-card ad-item';
+                        adContainer.style.padding = '16px 12px';
+                        adContainer.style.background = '#111';
+                        adContainer.style.textAlign = 'center';
+
+                        const adHeading = document.createElement('h6');
+                        adHeading.className = 'text-muted mb-2';
+                        adHeading.style.fontSize = '10px';
+                        adHeading.textContent = 'Advertisement';
+                        adContainer.appendChild(adHeading);
+
+                        const adIns = document.createElement('ins');
+                        adIns.className = 'eas6a97888e10';
+                        adIns.dataset.zoneid = '5792418';
+                        adContainer.appendChild(adIns);
+
+                        container.appendChild(adContainer);
+                        insertedAds++;
+                    }
                 });
+
+                if (insertedAds > 0) {
+                    try {
+                        (window.AdProvider = window.AdProvider || []).push({ "serve": {} });
+                    } catch (e) {
+                        console.error("Stories ad serving error:", e);
+                    }
+                }
 
                 if (hasNextPage) {
                     loadMoreContainer.innerHTML = '<button id="stories-load-more-btn" class="btn btn-danger" onclick="loadMoreStories()">Load More Stories</button>';
