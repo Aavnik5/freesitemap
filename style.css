@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+/* General Body Styles */
+body {
+    background-color: #3C3C3C;
+    color: #e0e0e0;
+}
+
+/* Navbar Styles */
+.navbar-dark {
+    background-color: #000000 !important;
+    border-bottom: 1px solid #333;
+}
+
+.navbar-brand-stylish {
+    font-family: 'Dancing Script', cursive;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #FFFFFF !important;
+}
+
+/* Card Styles */
+.card {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Gallery Styles */
+.gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #333;
+    padding-bottom: 70px;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Like, View, Share Buttons */
+.like-button, .view-count, .share-buttons {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.like-button {
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+}
+
+.view-count {
+    top: 10px;
+    right: 10px;
+}
+
+.share-buttons {
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.share-buttons a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Loader */
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    flex-direction: column;
+}
+
+/* Modal Styles */
+.modal-content {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+}
+
+.modal-img {
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+.pdf-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+}
+
+.pdf-container iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px; /* Covers the Google Drive header */
+    z-index: 10;
+}
+
+/* Horizontal Scroll Container */
+.horizontal-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 15px;
+}
+
+#dynamic-page-cards-container .dynamic-page-card {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex: 0 0 auto !important;
+    width: 250px !important;
+    margin-right: 15px !important;
+    background-color: #1f1f1f !important;
+    border: 1px solid #333 !important;
+    color: #e0e0e0 !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+#dynamic-page-cards-container .dynamic-page-card .card-img-top {
+    width: 80px !important;
+    height: 80px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+    margin-right: 15px !important;
+    margin-bottom: 0 !important;
+}
+
+#dynamic-page-cards-container .dynamic-page-card .card-body {
+    flex: 1 !important;
+    padding: 0 !important;
+}
+
+#dynamic-page-cards-container .dynamic-page-card .card-title {
+    color: #e0e0e0 !important;
+    white-space: normal !important;
+}
+
+.footer {
+    background-color: #000000 !important;
+}
+
+/* Modern FAQ Styles */
+.accordion-item.modern-accordion-item {
+    background-color: #2a2a2a; /* Darker background for items */
+    border: none; /* Remove default Bootstrap border */
+    margin-bottom: 15px; /* Spacing between items */
+    border-radius: 8px; /* Rounded corners for the whole item */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    overflow: hidden; /* Ensures border-radius applies correctly */
+}
+
+.accordion-button {
+    background-color: #3a3a3a; /* Slightly lighter than item background */
+    color: #ffffff; /* White text for questions */
+    font-weight: 600; /* Slightly bolder font */
+    border-radius: 8px; /* Match item border-radius */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.accordion-button:not(.collapsed) {
+    color: #ff4d4d; /* Red color when expanded */
+    background-color: #4a4a4a; /* Darker background when expanded */
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125); /* Subtle shadow at bottom */
+}
+
+.accordion-button:focus {
+    box-shadow: none; /* Remove focus outline */
+    border-color: transparent;
+}
+
+.accordion-button::after {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Make arrow white */
+}
+
+.accordion-body {
+    background-color: #1f1f1f; /* Match content-wrapper background */
+    color: #cccccc; /* Lighter text for answers */
+    padding: 20px; /* More padding */
+    border-top: 1px solid #333; /* Separator from header */
+}
+
+.alt-text {
+    text-align: center;
+    margin-top: 2px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.caption {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.plyr__control--overlaid {
+    background: #dc3545 !important;
+    background: var(--plyr-video-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, #dc3545))) !important;
+    border: 0;
+    border-radius: 100%;
+    color: var(--plyr-video-control-color, #fff);
+    display: none;
+    left: 50%;
+    opacity: .9;
+    padding: calc(var(--plyr-control-spacing, 10px) * 1.5);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: .3s;
+    z-index: 2;
+}
