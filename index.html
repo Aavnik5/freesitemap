@@ -249,9 +249,40 @@
         }
 
         /* PICS & COMICS GRID */
-        .grid-item { background-color: #222; border-radius: 8px; overflow: hidden; position: relative; }
-        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-item .title { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 20px 8px 8px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .grid-item {
+            background: linear-gradient(160deg, #171b24 0%, #0f131a 100%);
+            border: 1px solid #2a303d;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+        }
+        .gallery-item {
+            aspect-ratio: 3 / 4;
+        }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .grid-item .title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, rgba(7, 9, 13, 0.96) 55%);
+            color: #f4f6fb;
+            padding: 24px 10px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .grid-item img.pdf-thumb {
+            object-fit: contain;
+            padding: 16px;
+            background: radial-gradient(circle at 30% 20%, #1d2430 0%, #10141c 100%);
+        }
 
         .fake-stats-overlay {
             position: absolute;
@@ -259,34 +290,61 @@
             right: 8px;
             left: auto;
             display: flex;
-            flex-direction: column; /* Stack stat items vertically */
-            align-items: flex-end; /* Align each stat item to the right */
+            flex-direction: row;
+            align-items: center;
             background: none; /* Removed background */
             color: #fff;
             padding: 0; /* Removed padding */
             border-radius: 0; /* Removed border-radius */
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 5;
-            gap: 8px; /* Increased gap between each stat item */
+            gap: 6px;
             backdrop-filter: none; /* Removed blur */
         }
         .fake-stats-overlay .stat-item {
             display: flex;
-            flex-direction: column; /* Stack icon and number vertically */
-            align-items: center; /* Center icon and number horizontally within item */
-            gap: 2px; /* Gap between icon and number */
-            background: rgba(0,0,0,0.5); /* Add semi-transparent background to each stat item */
-            padding: 5px 8px;
-            border-radius: 6px;
+            align-items: center;
+            gap: 4px;
+            background: rgba(7, 10, 16, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 4px 7px;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
         }
         .fake-stats-overlay .stat-item i {
-            font-size: 13px;
+            font-size: 11px;
         }
         /* Make the share icon in overlay larger and clickable */
         .fake-stats-overlay .share-stat i.fas.fa-share {
-            font-size: 18px; /* Make it a bit larger than others, but not too big */
+            font-size: 13px;
             cursor: pointer;
+        }
+        .fake-stats-overlay .action-count {
+            font-size: 10px;
+            line-height: 1;
+        }
+        .feed-ad-card {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(180deg, #11151d 0%, #0b0e13 100%);
+            border: 1px dashed #2d3544;
+            border-radius: 12px;
+            min-height: 165px;
+            display: grid;
+            align-content: start;
+            gap: 8px;
+        }
+        .feed-ad-card .ad-tag {
+            color: #8b95a8;
+            font-size: 10px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .feed-ad-card .ad-hint {
+            color: #627086;
+            font-size: 11px;
+            margin: 0;
         }
 
         .article-card {
@@ -628,6 +686,15 @@
         };
         const encodeParam = (value) => encodeURIComponent(String(value || '').trim());
         const isHttpUrl = (value) => /^https?:\/\/[^"'<>\s]+$/i.test(String(value || '').trim());
+        const prettifyFileTitle = (fileName) => {
+            const base = String(fileName || '')
+                .replace(/\.[^/.]+$/, '')
+                .replace(/[_-]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (!base) return 'Untitled';
+            return base.length > 64 ? `${base.slice(0, 61)}...` : base;
+        };
         let currentPage = 1;
         let videoCurrentPage = 1;
         let storiesCurrentPage = 1;
@@ -648,7 +715,9 @@
         const STORY_AD_EVERY = 2;
         const STORY_AD_SESSION_CAP = 10;
         const STORY_AD_SESSION_KEY = 'fpx_story_ads_served';
+        const SHORTS_SPECIAL_AD_KEY = 'fpx_shorts_special_ad_served';
         let storiesAdsServed = 0;
+        let shortsSpecialAdServed = false;
 
 
         // --- NEW: Pagination state for Grids (Pics/Comics) ---
@@ -673,8 +742,10 @@
             try {
                 const fromStorage = parseInt(sessionStorage.getItem(STORY_AD_SESSION_KEY) || '0', 10);
                 storiesAdsServed = Number.isFinite(fromStorage) && fromStorage >= 0 ? fromStorage : 0;
+                shortsSpecialAdServed = sessionStorage.getItem(SHORTS_SPECIAL_AD_KEY) === '1';
             } catch {
                 storiesAdsServed = 0;
+                shortsSpecialAdServed = false;
             }
         }
 
@@ -686,6 +757,15 @@
             storiesAdsServed += 1;
             try {
                 sessionStorage.setItem(STORY_AD_SESSION_KEY, String(storiesAdsServed));
+            } catch {
+                // ignore session storage write failures
+            }
+        }
+
+        function markShortsSpecialAdServed() {
+            shortsSpecialAdServed = true;
+            try {
+                sessionStorage.setItem(SHORTS_SPECIAL_AD_KEY, '1');
             } catch {
                 // ignore session storage write failures
             }
@@ -1703,8 +1783,8 @@ function updateMetaForTab(tab, category = '') {
                 }
 
                 const videos = data.gifs || [];
-                const SHORTS_AD_INTERVAL = 8; // Show ad less frequently in shorts
-                const MAX_SHORTS_ADS_PER_BATCH = isNewCategory ? 2 : 1;
+                const SHORTS_AD_INTERVAL = 2; // Show ad after every 2 shorts
+                const MAX_SHORTS_ADS_PER_BATCH = Number.POSITIVE_INFINITY; // No per-batch cap
                 let shortsAdsInserted = 0;
                 if (videos.length === 0) {
                      if (isNewCategory) {
@@ -1765,9 +1845,9 @@ function updateMetaForTab(tab, category = '') {
                         (index + 1) % SHORTS_AD_INTERVAL === 0 &&
                         shortsAdsInserted < MAX_SHORTS_ADS_PER_BATCH;
                     if (shouldInsertAd) {
-                        const useNewZone = shortsAdsInserted % 2 === 0;
-                        const zoneClass = useNewZone ? 'eas6a97888e31' : 'eas6a97888e10';
-                        const zoneId = useNewZone ? '5862968' : '5792430';
+                        const useSpecialOneTimeAd = !shortsSpecialAdServed;
+                        const zoneClass = useSpecialOneTimeAd ? 'eas6a97888e31' : 'eas6a97888e10';
+                        const zoneId = useSpecialOneTimeAd ? '5862968' : '5792430';
                         const adItem = document.createElement('div');
                         adItem.className = 'video-snap-item';
                         adItem.innerHTML = `
@@ -1779,11 +1859,17 @@ function updateMetaForTab(tab, category = '') {
                             </div>
                         `;
                         container.appendChild(adItem);
-                        (window.AdProvider = window.AdProvider || []).push({"serve": {}});
                         shortsObserver.observe(adItem); // Observe dynamic ad item
                         shortsAdsInserted++;
+                        if (useSpecialOneTimeAd) {
+                            markShortsSpecialAdServed();
+                        }
                     }
                 });
+
+                if (shortsAdsInserted > 0) {
+                    serveAdProviderLater();
+                }
                 
                 addShareListeners(container);
                 container.insertAdjacentHTML('beforeend', `<div class="load-more-container" style="height: 120px; display:flex; align-items:center; justify-content:center; scroll-snap-align: start;"><button id="load-more-btn" class="btn btn-danger" onclick="nextShortsPage()">Load More</button></div>`);
@@ -1907,12 +1993,13 @@ function updateMetaForTab(tab, category = '') {
                 // --- END NEW LOGIC ---
 
                 // --- RENDER ITEMS ---
+                let gridAdsInserted = 0;
                 files.forEach((file, index) => {
                     const isPdf = file.mimeType === 'application/pdf';
                     const col = document.createElement('div');
                     col.className = 'col-6 col-md-4 col-lg-3';
                     const gridItem = document.createElement('div');
-                    gridItem.className = 'grid-item';
+                    gridItem.className = 'grid-item gallery-item';
                     
                     // NEW: Add fake stats overlay
                     const fakeStats = document.createElement('div');
@@ -1955,6 +2042,7 @@ function updateMetaForTab(tab, category = '') {
                             thumbnailUrl = `${WORKER_URL}/proxy/image?url=${encodeURIComponent(file.thumbnailLink)}`;
                         }
                         img.src = thumbnailUrl;
+                        img.classList.add('pdf-thumb');
                     } else {
                         img.src = `${WORKER_URL}/gdrive/file/${file.id}`;
                         img.loading = 'lazy';
@@ -1963,7 +2051,7 @@ function updateMetaForTab(tab, category = '') {
 
                     const title = document.createElement('div');
                     title.className = 'title';
-                    title.textContent = file.name;
+                    title.textContent = prettifyFileTitle(file.name);
                     
                     link.appendChild(img);
                     link.appendChild(title);
@@ -1982,36 +2070,23 @@ function updateMetaForTab(tab, category = '') {
                     if ((index + 1) % 2 === 0 && (index + 1) < files.length) {
                         const adCol = document.createElement('div');
                         adCol.className = 'col-12 ad-item-wrapper'; // Full width for ad
-                        
                         const adContainerDiv = document.createElement('div');
-                        adContainerDiv.style.cssText = "text-align: center; padding: 10px 0; background-color: #111; margin-bottom: 15px;";
-
-                        const adHeading = document.createElement('h6');
-                        adHeading.className = 'text-muted mb-2';
-                        adHeading.style.fontSize = '10px';
-                        adHeading.textContent = 'Advertisement';
-                        adContainerDiv.appendChild(adHeading);
-
-                        const adScript1 = document.createElement('script');
-                        adScript1.async = true;
-                        adScript1.type = 'application/javascript';
-                        adScript1.src = 'https://a.magsrv.com/ad-provider.js';
-                        adContainerDiv.appendChild(adScript1);
-
-                        const adIns = document.createElement('ins');
-                        adIns.className = 'eas6a97888e10';
-                        adIns.dataset.zoneid = '5792418';
-                        adContainerDiv.appendChild(adIns);
-
-                        const adScript2 = document.createElement('script');
-                        adScript2.type = 'application/javascript';
-                        adScript2.textContent = '(AdProvider = window.AdProvider || []).push({"serve": {}});';
-                        adContainerDiv.appendChild(adScript2);
-
+                        adContainerDiv.className = 'feed-ad-card';
+                        adContainerDiv.innerHTML = `
+                            <div class="ad-tag">Advertisement</div>
+                            <ins class="eas6a97888e10" data-zoneid="5792418"></ins>
+                            <p class="ad-hint">Sponsored placement</p>
+                        `;
                         adCol.appendChild(adContainerDiv);
                         grid.appendChild(adCol);
+                        gridAdsInserted++;
                     }
                 });
+
+                if (gridAdsInserted > 0) {
+                    serveAdProviderLater();
+                }
+
                 // --- END RENDER ---
 
                 // --- MANAGE LOAD MORE BUTTON ---
