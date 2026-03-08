@@ -45,8 +45,15 @@ async function handleRequest(request) {
     let rawQuery = decodeURIComponent(path.split("/")[3]);
     let cleanQuery = rawQuery.replace(/^(niche:|tag:|user:)/, "");
     const page = url.searchParams.get("page") || "1";
+    const cache = caches.default;
+    const cacheKey = new Request(request.url, request);
 
     try {
+      const cachedResponse = await cache.match(cacheKey);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
       const headers = { "User-Agent": "Mozilla/5.0", "Referer": "https://www.redgifs.com/" };
       const authRes = await fetch("https://api.redgifs.com/v2/auth/temporary", { headers });
       const token = (await authRes.json()).token;
@@ -66,14 +73,31 @@ async function handleRequest(request) {
 
       const apiResponse = await fetch(apiUrl, { headers: { "Authorization": `Bearer ${token}`, ...headers } });
       const data = await apiResponse.json();
+      const trimmedData = {
+        ...data,
+        gifs: Array.isArray(data.gifs)
+          ? data.gifs.map((gif) => ({
+              id: gif && gif.id,
+              urls: {
+                thumbnail: gif && gif.urls ? gif.urls.thumbnail : undefined,
+                hd: gif && gif.urls ? gif.urls.hd : undefined,
+                poster: gif && gif.urls ? gif.urls.poster : undefined
+              },
+              width: gif && gif.width,
+              height: gif && gif.height
+            }))
+          : []
+      };
 
-      return new Response(JSON.stringify(data), {
+      const response = new Response(JSON.stringify(trimmedData), {
         headers: {
           "Content-Type": "application/json",
           ...corsHeaders,
-          "Cache-Control": "public, max-age=60"
+          "Cache-Control": "public, max-age=1800"
         }
       });
+      await cache.put(cacheKey, response.clone());
+      return response;
     } catch (err) {
       return new Response(JSON.stringify({ error: true, message: err.message, gifs: [] }), {
         status: 200,

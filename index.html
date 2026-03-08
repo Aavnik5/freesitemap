@@ -1696,25 +1696,50 @@ function updateMetaForTab(tab, category = '') {
         }
 
         const shortsObserver = new IntersectionObserver((entries) => {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const shouldReleaseShortVideo = Boolean(connection && (connection.effectiveType === '2g' || connection.saveData === true));
             entries.forEach(entry => {
                 const video = entry.target.querySelector('video');
                 if (!video) return;
-                if (entry.isIntersecting) {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
                     video.muted = isGlobalMuted;
                     const muteBtnIcon = entry.target.querySelector('.mute-toggle i');
                     if (muteBtnIcon) {
                         muteBtnIcon.className = isGlobalMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
                     }
-                    if (!video.getAttribute('src')) {
+                    if (!video.getAttribute('src') && video.dataset.src) {
                         video.src = video.dataset.src;
-                        video.load();
                     }
+
+                    let nextItem = entry.target.nextElementSibling;
+                    while (nextItem) {
+                        const nextVideo = nextItem.querySelector('video');
+                        if (nextVideo) {
+                            if (!nextVideo.getAttribute('src') && nextVideo.dataset.src) {
+                                nextVideo.src = nextVideo.dataset.src;
+                            }
+                            break;
+                        }
+                        nextItem = nextItem.nextElementSibling;
+                    }
+
                     video.play().catch(err => {});
                 } else {
                     video.pause();
+                    if (shouldReleaseShortVideo && video.getAttribute('src')) {
+                        video.src = '';
+                    }
                 }
             });
-        }, { threshold: 0.6 });
+        }, { threshold: 0.7 });
+        const sentinelObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoading) {
+                    sentinelObserver.unobserve(entry.target); // stop watching old sentinel
+                    nextShortsPage(); // auto load next page
+                }
+            });
+        }, { threshold: 0.1 });
         
         async function fetchNichesAndRender() {
             renderCategories(["New", "Trending", "Desi", "Hardcore", "Ass", "Asian", "Latina", "MILF", "Amateur"], 'shorts');
@@ -1795,19 +1820,24 @@ function updateMetaForTab(tab, category = '') {
                      return;
                 }
                 
+                const existingShortsCount = container.querySelectorAll('.video-player').length;
                 videos.forEach((video, index) => {
-                    const originalUrl = video.urls?.sd || video.urls?.hd;
+                    const originalUrl = video.urls?.hd;
                     if (!originalUrl) return;
                     const videoSrc = `${WORKER_URL}/proxy/video?url=${encodeURIComponent(originalUrl)}`;
                     const item = document.createElement('div');
                     item.className = 'video-snap-item';
                     const mutedAttribute = isGlobalMuted ? 'muted' : '';
+                    const isFirstShortVideo = existingShortsCount === 0 && index === 0;
+                    const videoSourceAttributes = isFirstShortVideo
+                        ? `src="${videoSrc}" data-src="${videoSrc}" preload="metadata"`
+                        : `data-src="${videoSrc}" preload="none"`;
                     const tagsHTML = (video.tags && video.tags.length > 0) 
                         ? `<div class="hashtags">${video.tags.map(tag => `#${tag}`).join(' ')}</div>` 
                         : '';
 
                     item.innerHTML = `
-                        <video class="video-player" data-src="${videoSrc}" poster="${video.urls?.poster}" ${mutedAttribute} loop playsinline preload="metadata"></video>
+                        <video class="video-player" ${videoSourceAttributes} poster="${video.urls?.poster || video.urls?.thumbnail || ''}" ${mutedAttribute} loop playsinline></video>
                         
                         <div class="shorts-info">
                             <div class="username">@${video.userName || 'unknown_user'}</div>
@@ -1872,7 +1902,12 @@ function updateMetaForTab(tab, category = '') {
                 }
                 
                 addShareListeners(container);
-                container.insertAdjacentHTML('beforeend', `<div class="load-more-container" style="height: 120px; display:flex; align-items:center; justify-content:center; scroll-snap-align: start;"><button id="load-more-btn" class="btn btn-danger" onclick="nextShortsPage()">Load More</button></div>`);
+                const sentinel = document.createElement('div');
+                sentinel.className = 'load-more-container';
+                sentinel.style.cssText = 'height:10px; scroll-snap-align:start;';
+                sentinel.id = 'shorts-sentinel';
+                container.appendChild(sentinel);
+                sentinelObserver.observe(sentinel);
 
             } catch (err) { 
                 showError(err.message);
@@ -2432,4 +2467,3 @@ function updateMetaForTab(tab, category = '') {
 
 </body>
 </html>
-
