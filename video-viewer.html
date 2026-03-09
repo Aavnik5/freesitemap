@@ -760,7 +760,7 @@
         seoTitle: v.seoTitle || v.title || "Free HD Video | FreePornX",
         seekId: v.seekId || v.id || id,
         seekUrl: v.seekUrl || `https://seekstreaming.com/${id}`,
-        embedUrl: v.embedUrl || `https://seekstreaming.com/embed/${id}`,
+        embedUrl: v.embedUrl || `https://freepornx.embedseek.com/#${id}`,
         thumbnail: v.thumbnail || "",
         duration: parseInt(v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
@@ -912,7 +912,7 @@
         seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
         seekId: doodId,
         seekUrl: cached.seekUrl || `https://seekstreaming.com/${doodId}`,
-        embedUrl: cached.embedUrl || `https://seekstreaming.com/embed/${doodId}`,
+        embedUrl: cached.embedUrl || `https://freepornx.embedseek.com/#${doodId}`,
         thumbnail: paramThumb || cached.thumbnail || "",
         duration: cached.duration || 0,
         views: cached.views || 0,
@@ -983,7 +983,7 @@
         return `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`;
       }
       if (video.embedUrl) return video.embedUrl;
-      return `https://seekstreaming.com/embed/${id}`;
+      return `https://freepornx.embedseek.com/#${id}`;
     }
 
     function getWatchUrl(video) {
