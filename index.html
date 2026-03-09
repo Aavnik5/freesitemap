@@ -1697,12 +1697,28 @@ function updateMetaForTab(tab, options = {}) {
             }
         }
 
+        function vtVideoSlug(title) {
+            return String(title || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, "")
+                .trim()
+                .replace(/\s+/g, "-")
+                .replace(/-+/g, "-")
+                .substring(0, 60) || "video";
+        }
+
         /** Build video-viewer.html URL based on source */
         function vtVideoUrl(v) {
+            const id = v.source === "eporner"
+                ? (v.id || "")
+                : (v.seekId || v.id || "");
+            if (!id) return "video-viewer.html";
+
+            const slug = vtVideoSlug(v.seoTitle || v.title || "");
             if (v.source === "eporner") {
-                return `video-viewer.html?t=e&id=${encodeURIComponent(v.id || "")}`;
+                return `video-viewer.html#e-${slug}-${id}`;
             }
-            return `video-viewer.html?t=s&id=${encodeURIComponent(v.seekId || v.id || "")}`;
+            return `video-viewer.html#s-${slug}-${id}`;
         }
 
         /** Format seconds → M:SS */

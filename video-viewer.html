@@ -570,12 +570,104 @@
         : (video.seekId || video.id || "");
     }
 
-    function buildViewerUrl(video) {
+    function buildVideoSlug(title) {
+      return String(title || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .substring(0, 60) || "video";
+    }
+
+    function buildViewerHash(video) {
       const id = getPrimaryVideoId(video);
-      if (!id) return "video-viewer.html";
-      return video.source === "eporner"
-        ? `video-viewer.html?t=e&id=${encodeURIComponent(id)}`
-        : `video-viewer.html?t=s&id=${encodeURIComponent(id)}`;
+      if (!id) return "";
+      const slug = buildVideoSlug(video.seoTitle || video.title || "");
+      const prefix = video.source === "eporner" ? "e" : "s";
+      return `#${prefix}-${slug}-${id}`;
+    }
+
+    function buildViewerUrl(video) {
+      const hash = buildViewerHash(video);
+      return hash ? `video-viewer.html${hash}` : "video-viewer.html";
+    }
+
+    function buildCanonicalViewerUrl(video) {
+      const hash = buildViewerHash(video) || window.location.hash || "";
+      return `https://freepornx.site/video-viewer.html${hash}`;
+    }
+
+    function parseVideoHash() {
+      const hash = decodeURIComponent(window.location.hash.slice(1)).trim();
+      if (!hash) return null;
+
+      const typePrefix = hash.charAt(0).toLowerCase();
+      if ((typePrefix !== "s" && typePrefix !== "e") || hash.charAt(1) !== "-") {
+        return null;
+      }
+
+      const rest = hash.slice(2);
+      const lastDash = rest.lastIndexOf("-");
+      if (lastDash <= 0 || lastDash === rest.length - 1) {
+        return null;
+      }
+
+      const videoId = rest.slice(lastDash + 1).trim();
+      const slug = rest.slice(0, lastDash).trim();
+      if (!videoId) return null;
+
+      return {
+        videoType: typePrefix === "e" ? "eporner" : "seekstreaming",
+        videoId,
+        slug
+      };
+    }
+
+    function parseLegacyVideoParams() {
+      const urlParams = new URLSearchParams(location.search);
+      const shortType = (urlParams.get("t") || "").toLowerCase();
+      const legacyType = (urlParams.get("type") || "").toLowerCase();
+      const rawId = (urlParams.get("id") || "").trim();
+      const paramTitleValue = decodeURIComponent(urlParams.get("title") || "");
+      const paramThumbValue = decodeURIComponent(urlParams.get("thumb") || "");
+      const legacyEmbedValue = decodeURIComponent(urlParams.get("embed") || "").trim();
+
+      let resolvedType = "";
+      if (shortType === "s") {
+        resolvedType = "seekstreaming";
+      } else if (shortType === "e") {
+        resolvedType = "eporner";
+      } else if (legacyType === "seekstreaming" || legacyType === "eporner") {
+        resolvedType = legacyType;
+      } else if (legacyEmbedValue.includes("eporner.com")) {
+        resolvedType = "eporner";
+      } else if (rawId) {
+        resolvedType = "seekstreaming";
+      }
+
+      return {
+        videoType: resolvedType,
+        videoId: resolvedType === "eporner" ? (rawId || extractEpornerId(legacyEmbedValue)) : rawId,
+        paramTitle: paramTitleValue,
+        paramThumb: paramThumbValue,
+        legacyEmbed: legacyEmbedValue
+      };
+    }
+
+    function getRouteFromLocation() {
+      const hashRoute = parseVideoHash();
+      if (hashRoute) {
+        return {
+          videoType: hashRoute.videoType,
+          videoId: hashRoute.videoId,
+          slug: hashRoute.slug,
+          paramTitle: "",
+          paramThumb: "",
+          legacyEmbed: ""
+        };
+      }
+      return parseLegacyVideoParams();
     }
 
     function videoCacheKey(source, id) {
@@ -639,32 +731,19 @@
       }
     }
 
-    // ── READ URL PARAMS ──────────────────────────────────────────────────────
-    const urlParams = new URLSearchParams(location.search);
-    const shortType = urlParams.get("t");
-    const legacyType = (urlParams.get("type") || "").toLowerCase();
-    const rawId = (urlParams.get("id") || "").trim();
-    const paramTitle = decodeURIComponent(urlParams.get("title") || "");
-    const paramThumb = decodeURIComponent(urlParams.get("thumb") || "");
-    const legacyEmbed = decodeURIComponent(urlParams.get("embed") || "").trim();
-    const videoType = shortType === "s"
-      ? "seekstreaming"
-      : shortType === "e"
-        ? "eporner"
-        : (legacyType || (legacyEmbed.includes("eporner.com") ? "eporner" : "seekstreaming"));
-    const doodId = videoType === "seekstreaming" ? rawId : "";
-    const epornerId = videoType === "eporner" ? (rawId || extractEpornerId(legacyEmbed)) : "";
-    const epEmbed = videoType === "eporner"
-      ? (legacyEmbed || (epornerId ? `https://www.eporner.com/embed/${epornerId}/` : ""))
-      : "";
-    let currentVideoKey = videoCacheKey(videoType, videoType === "eporner" ? epornerId : doodId);
-    let adDismissed = videoType !== "seekstreaming";
+    let videoType = "";
+    let doodId = "";
+    let epornerId = "";
+    let epEmbed = "";
+    let paramTitle = "";
+    let paramThumb = "";
+    let currentVideoKey = "";
+    let activeVideo = null;
+    let adDismissed = true;
+    let viewerLoadToken = 0;
     let adCountdownTimer = null;
     let adAutoCloseTimer = null;
-
-    if (!doodId && !epEmbed) {
-      $("player-skeleton").innerHTML = `<div class="error-box"><i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:var(--brand)"></i><p>No video ID provided. Please go back.</p><a href="index.html?tab=videos" class="btn btn-outline-danger btn-sm mt-2">Go Back</a></div>`;
-    }
+    const PLAYER_SKELETON_HTML = $("player-skeleton").innerHTML;
 
     // ── WORKER: fetch single SeekStreaming video ──────────────────────────────
     async function fetchVideoFromFirestore(id) {
@@ -890,9 +969,59 @@
       }
     }
 
+    function resetViewerSurface() {
+      activeVideo = null;
+      $("dood-player").src = "about:blank";
+      $("player-wrap").classList.add("d-none");
+      $("player-skeleton").innerHTML = PLAYER_SKELETON_HTML;
+      $("player-skeleton").classList.remove("d-none");
+      $("related-grid").innerHTML = skeletonHTML(3);
+      $("btn-load-more").style.display = "none";
+      $("video-category").innerHTML = "";
+      $("video-desc").textContent = "";
+      $("desc-section").style.display = "none";
+      window.scrollTo(0, 0);
+    }
+
+    function applyRouteState(route) {
+      viewerLoadToken += 1;
+      paramTitle = route?.paramTitle || "";
+      paramThumb = route?.paramThumb || "";
+      videoType = route?.videoType || "";
+      doodId = videoType === "seekstreaming" ? String(route?.videoId || "").trim() : "";
+      epornerId = videoType === "eporner"
+        ? String(route?.videoId || extractEpornerId(route?.legacyEmbed || "")).trim()
+        : "";
+      epEmbed = videoType === "eporner"
+        ? (String(route?.legacyEmbed || "").trim() || (epornerId ? `https://www.eporner.com/embed/${epornerId}/` : ""))
+        : "";
+      currentVideoKey = videoCacheKey(videoType, videoType === "eporner" ? epornerId : doodId);
+      adDismissed = videoType !== "seekstreaming";
+      resetViewerSurface();
+      clearAdTimers();
+
+      if (videoType === "seekstreaming" && doodId) {
+        startAdGate();
+      } else {
+        hideAdOverlay();
+      }
+    }
+
+    function initViewerRoute() {
+      const route = getRouteFromLocation();
+      applyRouteState(route);
+
+      if (!doodId && !epEmbed) {
+        showViewerError("No video ID provided. Please go back.");
+        return;
+      }
+
+      loadVideo();
+    }
+
     function startAdGate() {
       const overlay = $("vast-overlay");
-      if (!overlay || videoType !== "seekstreaming") {
+      if (!overlay || videoType !== "seekstreaming" || !doodId) {
         hideAdOverlay();
         return;
       }
@@ -935,6 +1064,7 @@
     function holdPlayerForAd() {
       $("dood-player").src = "about:blank";
       $("player-wrap").classList.add("d-none");
+      $("player-skeleton").innerHTML = PLAYER_SKELETON_HTML;
       $("player-skeleton").classList.remove("d-none");
     }
 
@@ -973,6 +1103,7 @@
     // ── LOAD MAIN VIDEO ─────────────────────────────────────────────────────────
     async function loadVideo() {
       if (!doodId && !epEmbed) return;
+      const loadToken = viewerLoadToken;
       try {
         let video;
         if (videoType === "eporner") {
@@ -991,11 +1122,13 @@
             video = buildFallbackVideo();
           }
         }
+        if (loadToken !== viewerLoadToken) return;
         if (!video) throw new Error("Video details could not be loaded.");
         renderVideo(video);
         loadRelated(video.category || "Desi");
         updateSchema(video);
       } catch (err) {
+        if (loadToken !== viewerLoadToken) return;
         showViewerError(err.message);
       }
     }
@@ -1022,7 +1155,7 @@
       const seoTitle = video.seoTitle || video.title;
       $("video-title").textContent = seoTitle;
       const fullTitle = `${seoTitle} - Free HD Video | FreePornX`;
-      const canonicalUrl = new URL(buildViewerUrl(video), window.location.href).href;
+      const canonicalUrl = buildCanonicalViewerUrl(video);
       const description = `Watch ${seoTitle} free on FreePornX. No signup needed. Stream in HD on mobile and desktop.`;
       const thumb = video.thumbnail || "https://freepornx.site/cover-adult.jpg";
       document.title = fullTitle;
@@ -1072,7 +1205,7 @@
         "duration": video.duration > 0 ? `PT${Math.floor(video.duration/60)}M${video.duration%60}S` : "PT5M0S",
         "embedUrl": embedUrl,
         "contentUrl": contentUrl,
-        "url": new URL(buildViewerUrl(video), window.location.href).href,
+        "url": buildCanonicalViewerUrl(video),
         "identifier": getPrimaryVideoId(video),
         "publisher": {
           "@type": "Organization",
@@ -1099,6 +1232,7 @@
     async function loadRelated(initialCategory) {
       relatedCategory = initialCategory || "";
       relatedPage = 0;
+      relatedLoading = false;
       relatedAllLoaded = false;
       $("related-grid").innerHTML = skeletonHTML(3);
       await loadMoreRelated();
@@ -1106,11 +1240,13 @@
 
     async function loadMoreRelated() {
       if (relatedLoading || relatedAllLoaded) return;
+      const routeToken = viewerLoadToken;
       relatedLoading = true;
       $("btn-load-more").style.display = "none";
 
       try {
         const videos = await fetchVideosFromFirestore(relatedCategory, PAGE_SIZE, relatedPage);
+        if (routeToken !== viewerLoadToken) return;
         const filtered = videos.filter((v) => {
           const id = getPrimaryVideoId(v);
           return id && videoCacheKey(v.source, id) !== currentVideoKey;
@@ -1152,12 +1288,15 @@
           relatedAllLoaded = true;
         }
       } catch (err) {
+        if (routeToken !== viewerLoadToken) return;
         console.error("Related videos error:", err);
         if (relatedPage === 0) {
           $("related-grid").innerHTML = `<p style="color:var(--text-2);font-size:13px">Could not load related videos.</p>`;
         }
       } finally {
-        relatedLoading = false;
+        if (routeToken === viewerLoadToken) {
+          relatedLoading = false;
+        }
       }
     }
 
@@ -1250,13 +1389,11 @@
         mutObs.observe($("related-grid"), { childList: true, subtree: true });
       }
 
-      if (videoType === "seekstreaming") {
-        startAdGate();
-      } else {
-        hideAdOverlay();
-      }
+      initViewerRoute();
+    });
 
-      if (doodId || epEmbed) loadVideo();
+    window.addEventListener("hashchange", () => {
+      initViewerRoute();
     });
   </script>
 </body>
