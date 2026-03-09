@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Cache-Control" content="no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -749,6 +747,7 @@
 
     // ── WORKER: fetch single SeekStreaming video ──────────────────────────────
     async function fetchVideoFromFirestore(id) {
+      throw new Error("SeekStreaming not supported");
       const res = await fetch(`${VIDEOS_WORKER_URL}/video/${encodeURIComponent(id)}`);
       if (!res.ok) throw new Error(`Worker ${res.status}: Video not found`);
       const data = await res.json();
@@ -759,8 +758,8 @@
         title: v.title || "Untitled Video",
         seoTitle: v.seoTitle || v.title || "Free HD Video | FreePornX",
         seekId: v.seekId || v.id || id,
-        seekUrl: v.seekUrl || `https://seekstreaming.com/v/${id}`,
-        embedUrl: v.embedUrl || `https://freepornx.embedseek.com/#${id}`,
+        seekUrl: v.seekUrl || `https://seekstreaming.com/${id}`,
+        embedUrl: v.embedUrl || `https://seekstreaming.com/embed/${id}`,
         thumbnail: v.thumbnail || "",
         duration: parseInt(v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
@@ -805,8 +804,8 @@
         seoTitle: title,
         seekId: null,
         seekUrl: String(v.url || `https://www.eporner.com/video-${id}/`),
-        embedUrl: String(v.embed || v.embedUrl || epEmbed || `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`),
-        thumbnail: thumb ? (thumb.startsWith("https://telegram-dood-worker") ? thumb : `${VIDEOS_WORKER_URL}/proxy/thumb?url=${encodeURIComponent(thumb)}`) : "",
+        embedUrl: String(v.embed || v.embedUrl || epEmbed || `https://www.eporner.com/embed/${id}/`),
+        thumbnail: thumb,
         duration: parseInt(v.length_sec || v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
         likes: 0,
@@ -818,39 +817,36 @@
     }
 
     async function fetchEpornerVideo(id) {
-      // Routed through Worker — fixes browser CORS block
-      try {
-        const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/video?id=${encodeURIComponent(id)}`);
-        if (!res.ok) throw new Error(`Worker ${res.status}`);
-        const data = await res.json();
-        if (!data.ok || !data.video) throw new Error("Eporner video not found");
-        const v = data.video;
-        return {
-          id: String(v.id || id),
-          title: v.title || "Free HD Video",
-          seoTitle: v.title || "Free HD Video",
-          seekId: null,
-          seekUrl: v.seekUrl || `https://www.eporner.com/video-${id}/`,
-          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
-          thumbnail: v.thumbnail || "",
-          duration: parseInt(v.duration || "0") || 0,
-          views: parseInt(v.views || "0") || 0,
-          likes: 0,
-          category: normalizeCategory(v.category, v.title),
-          createdAt: "", description: v.category || "",
-          source: "eporner",
-        };
-      } catch (err) {
-        // Fallback — iframe still loads without metadata
-        return {
-          id, title: paramTitle || "Free HD Video", seoTitle: paramTitle || "Free HD Video",
-          seekId: null,
-          seekUrl: `https://www.eporner.com/video-${id}/`,
-          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
-          thumbnail: paramThumb || "", duration: 0, views: 0, likes: 0,
-          category: "Desi", createdAt: "", description: "", source: "eporner",
-        };
+      const candidates = [
+        `${EPORNER_VIDEO_API}/${encodeURIComponent(id)}/?format=json`,
+        `${EPORNER_VIDEO_API}/${encodeURIComponent(id)}?format=json`,
+        `${EPORNER_VIDEO_API}?id=${encodeURIComponent(id)}&format=json`
+      ];
+
+      let lastError = null;
+      for (const url of candidates) {
+        try {
+          const data = await fetchJsonResponse(url);
+          return normalizeEpornerVideo(data, id);
+        } catch (err) {
+          lastError = err;
+        }
       }
+
+      const fallbackQueries = [paramTitle, id].filter(Boolean);
+      for (const query of fallbackQueries) {
+        try {
+          const data = await fetchJsonResponse(
+            `${EPORNER_SEARCH_API}?query=${encodeURIComponent(query)}&per_page=10&page=1&thumbsize=big&order=top-weekly&gay=0&format=json`
+          );
+          const match = (data.videos || []).find((item) => String(item.id || "") === String(id));
+          if (match) return normalizeEpornerVideo(match, id);
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      throw lastError || new Error("Eporner video not found");
     }
 
     function buildFallbackVideo() {
@@ -863,7 +859,7 @@
           seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
           seekId: null,
           seekUrl: cached.seekUrl || `https://www.eporner.com/video-${id}/`,
-          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
+          embedUrl: epEmbed || cached.embedUrl || `https://www.eporner.com/embed/${id}/`,
           thumbnail: paramThumb || cached.thumbnail || "",
           duration: cached.duration || 0,
           views: cached.views || 0,
@@ -881,8 +877,8 @@
         title: paramTitle || cached.title || "Video",
         seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
         seekId: doodId,
-        seekUrl: cached.seekUrl || `https://seekstreaming.com/v/${doodId}`,
-        embedUrl: cached.embedUrl || `https://freepornx.embedseek.com/#${doodId}`,
+        seekUrl: cached.seekUrl || `https://seekstreaming.com/${doodId}`,
+        embedUrl: cached.embedUrl || `https://seekstreaming.com/embed/${doodId}`,
         thumbnail: paramThumb || cached.thumbnail || "",
         duration: cached.duration || 0,
         views: cached.views || 0,
@@ -896,7 +892,7 @@
 
     // ── WORKER: list videos (mixed feed) ────────────────────────────────
     async function fetchVideosFromFirestore(category = "", limit = 12, page = 0) {
-      const epPage = page + 1; // Eporner pages start at 1
+      const epPage = page + 1;
       const params = new URLSearchParams({ page: String(epPage), limit: String(limit) });
       if (category && category !== "All") params.set("category", category);
       const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/feed?${params}`);
@@ -937,8 +933,8 @@
       if (video.embedUrl) return video.embedUrl;
       const id = getPrimaryVideoId(video);
       return video.source === "eporner"
-        ? `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`
-        : `https://freepornx.embedseek.com/#${id}`;
+        ? `https://www.eporner.com/embed/${id}/`
+        : `https://seekstreaming.com/embed/${id}`;
     }
 
     function getWatchUrl(video) {
@@ -946,7 +942,7 @@
       if (video.source === "eporner") {
         return video.seekUrl || `https://www.eporner.com/video-${id}/`;
       }
-      return video.seekUrl || `https://seekstreaming.com/v/${id}`;
+      return video.seekUrl || `https://seekstreaming.com/${id}`;
     }
 
     function syncShortUrl(video) {
@@ -999,7 +995,7 @@
         ? String(route?.videoId || extractEpornerId(route?.legacyEmbed || "")).trim()
         : "";
       epEmbed = videoType === "eporner"
-        ? (String(route?.legacyEmbed || "").trim() || (epornerId ? `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${epornerId}` : ""))
+        ? (String(route?.legacyEmbed || "").trim() || (epornerId ? `https://www.eporner.com/embed/${epornerId}/` : ""))
         : "";
       currentVideoKey = videoCacheKey(videoType, videoType === "eporner" ? epornerId : doodId);
       adDismissed = videoType !== "seekstreaming";
