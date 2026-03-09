@@ -896,26 +896,27 @@
 
     // ── WORKER: list videos (mixed feed) ────────────────────────────────
     async function fetchVideosFromFirestore(category = "", limit = 12, page = 0) {
-      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      const epPage = page + 1; // Eporner pages start at 1
+      const params = new URLSearchParams({ page: String(epPage), limit: String(limit) });
       if (category && category !== "All") params.set("category", category);
-      const res = await fetch(`${VIDEOS_WORKER_URL}/mixed/feed?${params}`);
+      const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/feed?${params}`);
       if (!res.ok) throw new Error(`Worker ${res.status}`);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Worker error");
       return (data.videos || []).map(v => ({
-        id: v.id || v.seekId || "",
+        id: v.id || "",
         title: v.title || "",
         seoTitle: v.seoTitle || v.title || "Free HD Video",
-        seekId: v.seekId || null,
-        seekUrl: v.seekUrl || null,
-        embedUrl: v.embedUrl || "",
+        seekId: null,
+        seekUrl: v.seekUrl || "",
+        embedUrl: v.embedUrl || `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${v.id}`,
         thumbnail: v.thumbnail || "",
         duration: parseInt(v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
         likes: 0,
         category: normalizeCategory(v.category, v.title),
         createdAt: v.createdAt || "",
-        source: v.source || "seekstreaming",
+        source: "eporner",
         description: v.description || "",
       }));
     }
