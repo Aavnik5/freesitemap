@@ -859,7 +859,7 @@
           seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
           seekId: null,
           seekUrl: cached.seekUrl || `https://www.eporner.com/video-${id}/`,
-          embedUrl: epEmbed || cached.embedUrl || `https://www.eporner.com/embed/${id}/`,
+          embedUrl: `https://www.eporner.com/embed/${id}/`,
           thumbnail: paramThumb || cached.thumbnail || "",
           duration: cached.duration || 0,
           views: cached.views || 0,
@@ -892,20 +892,21 @@
 
     // ── WORKER: list videos (mixed feed) ────────────────────────────────
     async function fetchVideosFromFirestore(category = "", limit = 12, page = 0) {
-      const epPage = page + 1;
-      const params = new URLSearchParams({ page: String(epPage), limit: String(limit) });
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
       if (category && category !== "All") params.set("category", category);
-      const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/feed?${params}`);
+      const params2 = new URLSearchParams({ page: String(page + 1), limit: String(limit) });
+      if (category && category !== "All") params2.set("category", category);
+      const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/feed?${params2}`);
       if (!res.ok) throw new Error(`Worker ${res.status}`);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Worker error");
       return (data.videos || []).map(v => ({
-        id: v.id || "",
+        id: v.id || v.seekId || "",
         title: v.title || "",
         seoTitle: v.seoTitle || v.title || "Free HD Video",
-        seekId: null,
-        seekUrl: v.seekUrl || "",
-        embedUrl: v.embedUrl || `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${v.id}`,
+        seekId: v.seekId || null,
+        seekUrl: v.seekUrl || null,
+        embedUrl: v.embedUrl || "",
         thumbnail: v.thumbnail || "",
         duration: parseInt(v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
@@ -930,11 +931,12 @@
     }
 
     function getEmbedUrl(video) {
-      if (video.embedUrl) return video.embedUrl;
       const id = getPrimaryVideoId(video);
-      return video.source === "eporner"
-        ? `https://www.eporner.com/embed/${id}/`
-        : `https://seekstreaming.com/embed/${id}`;
+      if (video.source === "eporner") {
+        // Always use direct Eporner embed (proxy breaks player JS)
+        return `https://www.eporner.com/embed/${id}/`;
+      }
+      return video.embedUrl || `https://freepornx.embedseek.com/#${id}`;
     }
 
     function getWatchUrl(video) {
