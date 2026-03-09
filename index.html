@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -395,7 +395,7 @@
                     font-size: 10px;
                     text-align: center;
                     cursor: pointer;
-                    width: 20%;
+                    flex: 1;
                     text-decoration: none;
                     display: flex;
                     flex-direction: column;
@@ -579,6 +579,204 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* ── VIDEOS TAB STYLES ── */
+        #videos-view {
+            padding: 0;
+        }
+        .videos-cat-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 12px 12px 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            background: rgba(13,15,19,0.95);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--line-soft, #232730);
+        }
+        .videos-cat-scroll::-webkit-scrollbar { display: none; }
+        .vcat-chip {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #d1d6df;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s, transform 0.15s, border-color 0.15s;
+        }
+        .vcat-chip:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        .vcat-chip.active {
+            background: linear-gradient(135deg, #ff3b57, #ff6a7f);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* 2-column video grid */
+        .v2-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+        @media (min-width: 600px) {
+            .v2-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 900px) {
+            .v2-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .vcard {
+            background: linear-gradient(160deg, #171b24 0%, #0f131a 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            border: 1px solid #2a2f3a;
+            transition: transform 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+        .vcard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,59,87,0.18);
+        }
+        .vcard-thumb {
+            position: relative;
+            aspect-ratio: 16/9;
+            width: 100%;
+            overflow: hidden;
+            background: #1a1e28;
+        }
+        .vcard-thumb img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+        .vcard:hover .vcard-thumb img {
+            transform: scale(1.04);
+        }
+        .vdur {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.82);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .vhd {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(255,59,87,0.9);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 3px;
+            letter-spacing: 0.05em;
+        }
+        .vcard-info {
+            padding: 7px 8px 8px;
+        }
+        .vcard-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #f5f7fb;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        .vcard-meta {
+            font-size: 10px;
+            color: #768193;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .vcard-meta i {
+            font-size: 9px;
+        }
+        /* Skeleton for video cards */
+        .vskel {
+            background: linear-gradient(160deg, #171b24 0%, #0f131a 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #2a2f3a;
+            animation: vskel-pulse 1.5s ease-in-out infinite;
+        }
+        .vskel-thumb {
+            aspect-ratio: 16/9;
+            background: linear-gradient(90deg, #1a1e28 25%, #222a3a 50%, #1a1e28 75%);
+            background-size: 200% 100%;
+            animation: vshimmer 1.4s infinite linear;
+        }
+        .vskel-line {
+            height: 9px;
+            border-radius: 999px;
+            background: #2a2f3a;
+            margin: 7px 8px 5px;
+        }
+        .vskel-line.w80 { width: 80%; }
+        .vskel-line.w55 { width: 55%; }
+        @keyframes vshimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .vload-more-btn {
+            display: block;
+            margin: 14px auto 20px;
+            background: linear-gradient(135deg, #ff3b57, #ff6a7f);
+            color: #fff;
+            border: none;
+            padding: 10px 32px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .vload-more-btn:hover { opacity: 0.85; }
+        .vempty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #768193;
+            font-size: 14px;
+        }
+        .vempty i { font-size: 36px; margin-bottom: 10px; color: #3a3f4e; display: block; }
+        /* Source badges on video cards */
+        .vsrc-badge {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 3px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .vsrc-badge.seekstreaming {
+            background: rgba(255,59,87,0.9);
+            color: #fff;
+        }
+        .vsrc-badge.eporner {
+            background: rgba(30,140,255,0.9);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -657,10 +855,33 @@
             <div id="stories-load-more-container" class="text-center p-3"></div>
         </div>
         <div id="gifs-view" class="grid-view"><div id="gifs-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 10px 0;"></div></div>
+
+        <!-- ── VIDEOS TAB VIEW ── -->
+        <div id="videos-view" class="grid-view" style="padding:0;">
+            <!-- Category chips -->
+            <div class="videos-cat-scroll" id="videos-cat-scroll">
+                <span class="vcat-chip active" data-cat="" onclick="videosFilterCat('', this)">All</span>
+                <span class="vcat-chip" data-cat="Desi" onclick="videosFilterCat('Desi', this)">🇮🇳 Desi</span>
+                <span class="vcat-chip" data-cat="Bhabhi" onclick="videosFilterCat('Bhabhi', this)">Bhabhi</span>
+                <span class="vcat-chip" data-cat="Hardcore" onclick="videosFilterCat('Hardcore', this)">Hardcore</span>
+                <span class="vcat-chip" data-cat="Milf" onclick="videosFilterCat('Milf', this)">MILF</span>
+                <span class="vcat-chip" data-cat="Amateur" onclick="videosFilterCat('Amateur', this)">Amateur</span>
+                <span class="vcat-chip" data-cat="Asian" onclick="videosFilterCat('Asian', this)">Asian</span>
+                <span class="vcat-chip" data-cat="Lesbian" onclick="videosFilterCat('Lesbian', this)">Lesbian</span>
+                <span class="vcat-chip" data-cat="Anal" onclick="videosFilterCat('Anal', this)">Anal</span>
+                <span class="vcat-chip" data-cat="Teen" onclick="videosFilterCat('Teen', this)">Teen</span>
+                <span class="vcat-chip" data-cat="Blowjob" onclick="videosFilterCat('Blowjob', this)">Blowjob</span>
+            </div>
+            <!-- 2-column grid -->
+            <div class="v2-grid" id="videos-grid"></div>
+            <!-- Load more -->
+            <div id="videos-load-more-wrap" style="text-align:center;padding:0 10px 10px;"></div>
+        </div>
     </div>
 
     <div class="bottom-nav">
         <a class="nav-btn active" data-tab="shorts" href="?tab=shorts" onclick="switchTab('shorts', this); return false;"><i class="fas fa-play-circle"></i><span>Shorts</span></a>
+        <a class="nav-btn" data-tab="videos" href="?tab=videos" onclick="switchTab('videos', this); return false;"><i class="fas fa-video"></i><span>Videos</span></a>
         <a class="nav-btn" data-tab="pics" href="?tab=pics" onclick="switchTab('pics', this); return false;"><i class="fas fa-images"></i><span>Pics</span></a>
         <a class="nav-btn" data-tab="comics" href="?tab=comics" onclick="switchTab('comics', this); return false;"><i class="fas fa-book-open"></i><span>Comics</span></a>
         <a class="nav-btn" data-tab="stories" href="?tab=stories" onclick="switchTab('stories', this); return false;"><i class="fas fa-book-reader"></i><span>Stories</span></a>
@@ -1008,7 +1229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (shortId) {
         loadSingleShort(shortId);
     } else {
-        const validTabs = ['shorts', 'pics', 'comics', 'stories', 'gifs'];
+        const validTabs = ['shorts', 'videos', 'pics', 'comics', 'stories', 'gifs'];
         const initialTab = (tabParam && validTabs.includes(tabParam)) ? tabParam : 'shorts';
         const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
         const initialBtn = navButtons.find(btn => btn.dataset.tab === initialTab) || navButtons[0];
@@ -1249,6 +1470,30 @@ function updateMetaForTab(tab, options = {}) {
                 ]
             }
         };
+    } else if (tab === 'videos') {
+        title = "Free HD Porn Videos | Desi, MILF, Hardcore XXX | FreePornX";
+        description = "Watch free HD porn videos on FreePornX. Auto-updated from Telegram. Browse Desi, Bhabhi, MILF, Hardcore, Amateur, Asian, Lesbian, Anal, Teen & Blowjob categories. No signup needed.";
+        keywords = buildKeywordContent(BASE_SITE_KEYWORDS, ['free hd porn videos','desi sex videos','indian xxx videos','milf videos free','hardcore porn videos','amateur sex videos','blowjob videos free','doodstream videos','freepornx videos']);
+        canonicalUrl = buildTabUrl(baseUrl, 'videos');
+        schema = {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": title,
+            "description": description,
+            "url": canonicalUrl,
+            "mainEntity": {
+                "@type": "ItemList",
+                "name": "Free HD Porn Video Categories",
+                "itemListElement": [
+                    {"@type": "ListItem", "position": 1, "name": "Desi & Indian Sex Videos", "url": `${baseUrl}?tab=videos&cat=Desi`},
+                    {"@type": "ListItem", "position": 2, "name": "MILF & Mature Videos", "url": `${baseUrl}?tab=videos&cat=Milf`},
+                    {"@type": "ListItem", "position": 3, "name": "Hardcore Porn Videos", "url": `${baseUrl}?tab=videos&cat=Hardcore`},
+                    {"@type": "ListItem", "position": 4, "name": "Amateur Sex Videos", "url": `${baseUrl}?tab=videos&cat=Amateur`},
+                    {"@type": "ListItem", "position": 5, "name": "Asian Porn Videos", "url": `${baseUrl}?tab=videos&cat=Asian`},
+                    {"@type": "ListItem", "position": 6, "name": "Lesbian Sex Videos", "url": `${baseUrl}?tab=videos&cat=Lesbian`}
+                ]
+            }
+        };
     }
 
     // Update tags
@@ -1278,7 +1523,7 @@ function updateMetaForTab(tab, options = {}) {
     const path = settings.path || null;
     const category = settings.category || null;
     const updateHistory = settings.updateHistory !== false;
-    const allowedTabs = ['shorts', 'pics', 'comics', 'stories', 'gifs'];
+    const allowedTabs = ['shorts', 'videos', 'pics', 'comics', 'stories', 'gifs'];
     if (!allowedTabs.includes(tab)) tab = 'shorts';
     // --- NEW: Category Persistence Logic ---
     let lastCategoryName = null;
@@ -1326,6 +1571,12 @@ function updateMetaForTab(tab, options = {}) {
             storiesCurrentPage = 1;
             storiesRenderCount = 0;
             loadStories();
+        } else if (tab === 'videos') {
+            document.querySelector('.main-view').style.overflowY = 'auto';
+            document.getElementById('categoryContainer').innerHTML = '';
+            const vv = document.getElementById('videos-view');
+            if (vv) vv.style.display = 'block';
+            initVideosTab();
         } else if (tab === 'gifs') {
             document.querySelector('.main-view').style.overflowY = 'auto';
             document.getElementById('categoryContainer').innerHTML = '';
@@ -1380,7 +1631,201 @@ function updateMetaForTab(tab, options = {}) {
             }
         }
 
-                async function loadGifs() {
+           // ── VIDEOS TAB ──────────────────────────────────────────────────────────
+        // Worker URL — all reads go through the Cloudflare Worker (Turso backend)
+        const VIDEOS_WORKER_URL = "https://telegram-dood-worker.aav5roy.workers.dev";
+        const VIDEOS_PAGE_SIZE = 12;
+
+        let vtState = {
+            category: "",
+            loading: false,
+            allLoaded: false,
+            page: 0,       // page number for Turso offset pagination
+            pageLoaded: 0,
+        };
+
+        /** Fetch videos from Mixed feed (SeekStreaming + Eporner 50/50) */
+        async function vtFetchVideos(category, page) {
+            const params = new URLSearchParams({ page: page || 0 });
+            if (category && category !== "All") params.set("category", category);
+            const res = await fetch(`${VIDEOS_WORKER_URL}/mixed/feed?${params}`);
+            if (!res.ok) throw new Error(`Worker ${res.status}`);
+            const data = await res.json();
+            if (!data.ok) throw new Error(data.error || "Worker error");
+            return data.videos || [];
+        }
+
+        /** Build video-viewer.html URL based on source */
+        function vtVideoUrl(v) {
+            if (v.source === "eporner") {
+                return `video-viewer.html?type=eporner&embed=${encodeURIComponent(v.embedUrl)}&title=${encodeURIComponent(v.seoTitle || v.title)}&thumb=${encodeURIComponent(v.thumbnail)}`;
+            }
+            return `video-viewer.html?type=seekstreaming&id=${v.seekId}&title=${encodeURIComponent(v.seoTitle || v.title)}&thumb=${encodeURIComponent(v.thumbnail)}`;
+        }
+
+        /** Format seconds → M:SS */
+        function vtFmtDur(secs) {
+            if (!secs || secs <= 0) return "";
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            return `${m}:${String(s).padStart(2, "0")}`;
+        }
+
+        /** Format large numbers */
+        function vtFmtNum(n) {
+            const v = parseInt(String(n || "0")) || 0;
+            if (v >= 1e6) return (v / 1e6).toFixed(1) + "M";
+            if (v >= 1e3) return (v / 1e3).toFixed(1) + "K";
+            return v.toString();
+        }
+
+        function vtEscape(s) {
+            return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+        }
+
+        /** Render skeleton cards into grid */
+        function vtShowSkeleton(count = 6) {
+            const grid = document.getElementById("videos-grid");
+            if (!grid) return;
+            grid.innerHTML = Array.from({length: count}).map(() => `
+                <div class="vskel">
+                    <div class="vskel-thumb"></div>
+                    <div class="vskel-line w80"></div>
+                    <div class="vskel-line w55"></div>
+                </div>`).join("");
+        }
+
+        /** Render a single video card (handles both seekstreaming + eporner) */
+        function vtRenderCard(v) {
+            const dur = vtFmtDur(v.duration);
+            const thumb = vtEscape(v.thumbnail || "");
+            const title = vtEscape(v.seoTitle || v.title || "Untitled");
+            const views = vtFmtNum(v.views > 0 ? v.views : (Math.floor(Math.random() * 9000) + 500));
+            const href = vtVideoUrl(v);
+            // Source badge
+            const badgeHtml = v.source === "eporner"
+                ? `<span class="vsrc-badge eporner">HD</span>`
+                : `<span class="vsrc-badge seekstreaming">ORIGINAL</span>`;
+            return `
+                <a class="vcard" href="${href}" target="_self">
+                    <div class="vcard-thumb">
+                        <img src="${thumb}" alt="${title}" loading="lazy"
+                            onerror="this.src='https://via.placeholder.com/320x180/111827/ff3b57?text=FreePornX'">
+                        ${dur ? `<span class="vdur">${dur}</span>` : ""}
+                        ${badgeHtml}
+                    </div>
+                    <div class="vcard-info">
+                        <div class="vcard-title">${title}</div>
+                        <div class="vcard-meta">
+                            <span><i class="fas fa-eye"></i> ${views}</span>
+                            <span><i class="fas fa-tag"></i> ${vtEscape(v.category || "")}</span>
+                        </div>
+                    </div>
+                </a>`;
+        }
+
+        /** Load next batch of videos */
+        async function vtLoadMore() {
+            if (vtState.loading || vtState.allLoaded) return;
+            vtState.loading = true;
+            const wrap = document.getElementById("videos-load-more-wrap");
+            if (wrap) wrap.innerHTML = `<button class="vload-more-btn" disabled style="opacity:0.6">Loading...</button>`;
+
+            try {
+                const videos = await vtFetchVideos(vtState.category, vtState.page);
+                const grid = document.getElementById("videos-grid");
+                if (!grid) return;
+
+                // Clear skeletons on first page
+                if (vtState.pageLoaded === 0) {
+                    grid.innerHTML = "";
+                }
+
+                if (videos.length === 0 && vtState.pageLoaded === 0) {
+                    grid.innerHTML = `<div class="vempty" style="grid-column:1/-1">
+                        <i class="fas fa-video-slash"></i>
+                        No videos yet. Upload your first video via Telegram!
+                    </div>`;
+                    if (wrap) wrap.innerHTML = "";
+                    vtState.allLoaded = true;
+                    return;
+                }
+
+                videos.forEach(v => {
+                    grid.insertAdjacentHTML("beforeend", vtRenderCard(v));
+                });
+
+                vtState.pageLoaded++;
+                vtState.page++;
+                if (videos.length < VIDEOS_PAGE_SIZE) {
+                    vtState.allLoaded = true;
+                    if (wrap) wrap.innerHTML = `<p style="color:#768193;font-size:12px;padding:10px 0">All videos loaded</p>`;
+                } else {
+                    if (wrap) wrap.innerHTML = `<button class="vload-more-btn" id="vt-load-more-btn" onclick="vtLoadMore()">Load More</button>`;
+                    // Also attach Intersection Observer for auto-load
+                    vtObserveLoadMore();
+                }
+            } catch (err) {
+                console.error("[Videos] fetch error:", err);
+                const grid = document.getElementById("videos-grid");
+                if (grid && vtState.pageLoaded === 0) {
+                    grid.innerHTML = `<div class="vempty" style="grid-column:1/-1">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Could not load videos. Check your connection.
+                    </div>`;
+                }
+                if (wrap) wrap.innerHTML = `<button class="vload-more-btn" onclick="vtLoadMore()" style="background:#555">Retry</button>`;
+            } finally {
+                vtState.loading = false;
+            }
+        }
+
+        let _vtObserver = null;
+        function vtObserveLoadMore() {
+            if (_vtObserver) _vtObserver.disconnect();
+            const btn = document.getElementById("vt-load-more-btn");
+            if (!btn || !window.IntersectionObserver) return;
+            _vtObserver = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting && !vtState.loading && !vtState.allLoaded) {
+                    vtLoadMore();
+                }
+            }, { rootMargin: "200px" });
+            _vtObserver.observe(btn);
+        }
+
+        /** Category chip filter */
+        function videosFilterCat(cat, chipEl) {
+            document.querySelectorAll("#videos-cat-scroll .vcat-chip").forEach(c => c.classList.remove("active"));
+            if (chipEl) chipEl.classList.add("active");
+            vtState.category = cat;
+            vtState.page = 0;
+            vtState.pageLoaded = 0;
+            vtState.allLoaded = false;
+            vtState.loading = false;
+            if (_vtObserver) { _vtObserver.disconnect(); _vtObserver = null; }
+            vtShowSkeleton(VIDEOS_PAGE_SIZE);
+            vtLoadMore();
+        }
+
+        /** Initialize Videos tab */
+        function initVideosTab() {
+            // Reset state
+            vtState = { category: "", loading: false, allLoaded: false, page: 0, pageLoaded: 0 };
+            if (_vtObserver) { _vtObserver.disconnect(); _vtObserver = null; }
+            // Reset chip to "All"
+            document.querySelectorAll("#videos-cat-scroll .vcat-chip").forEach(c => c.classList.remove("active"));
+            const allChip = document.querySelector("#videos-cat-scroll .vcat-chip[data-cat='']");
+            if (allChip) allChip.classList.add("active");
+            // Show skeletons then load
+            vtShowSkeleton(VIDEOS_PAGE_SIZE);
+            const wrap = document.getElementById("videos-load-more-wrap");
+            if (wrap) wrap.innerHTML = "";
+            vtLoadMore();
+        }
+        // ── END VIDEOS TAB ───────────────────────────────────────────────────────
+
+        async function loadGifs() {
             if (isLoading) return;
             isLoading = true;
             const container = document.getElementById('gifs-container');
