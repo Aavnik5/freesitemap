@@ -1655,12 +1655,54 @@ function updateMetaForTab(tab, options = {}) {
             return data.videos || [];
         }
 
+        const VT_VIDEO_CACHE_KEY = "fpx-video-cache-v1";
+
+        function vtVideoCacheId(v) {
+            return v.source === "eporner"
+                ? (v.id || "")
+                : (v.seekId || v.id || "");
+        }
+
+        function vtCacheVideo(v) {
+            const id = vtVideoCacheId(v);
+            if (!id) return;
+
+            try {
+                const raw = localStorage.getItem(VT_VIDEO_CACHE_KEY);
+                const cache = raw ? JSON.parse(raw) : {};
+                const key = `${v.source === "eporner" ? "e" : "s"}:${id}`;
+                cache[key] = {
+                    id: v.id || id,
+                    seekId: v.seekId || null,
+                    title: v.title || "",
+                    seoTitle: v.seoTitle || v.title || "",
+                    embedUrl: v.embedUrl || "",
+                    seekUrl: v.seekUrl || "",
+                    thumbnail: v.thumbnail || "",
+                    duration: v.duration || 0,
+                    views: v.views || 0,
+                    category: v.category || "",
+                    createdAt: v.createdAt || "",
+                    source: v.source || "seekstreaming",
+                    savedAt: Date.now()
+                };
+
+                const pruned = Object.entries(cache)
+                    .sort((a, b) => (b[1]?.savedAt || 0) - (a[1]?.savedAt || 0))
+                    .slice(0, 160);
+
+                localStorage.setItem(VT_VIDEO_CACHE_KEY, JSON.stringify(Object.fromEntries(pruned)));
+            } catch (err) {
+                console.warn("[Videos] cache write failed:", err);
+            }
+        }
+
         /** Build video-viewer.html URL based on source */
         function vtVideoUrl(v) {
             if (v.source === "eporner") {
-                return `video-viewer.html?type=eporner&embed=${encodeURIComponent(v.embedUrl)}&title=${encodeURIComponent(v.seoTitle || v.title)}&thumb=${encodeURIComponent(v.thumbnail)}`;
+                return `video-viewer.html?t=e&id=${encodeURIComponent(v.id || "")}`;
             }
-            return `video-viewer.html?type=seekstreaming&id=${v.seekId}&title=${encodeURIComponent(v.seoTitle || v.title)}&thumb=${encodeURIComponent(v.thumbnail)}`;
+            return `video-viewer.html?t=s&id=${encodeURIComponent(v.seekId || v.id || "")}`;
         }
 
         /** Format seconds → M:SS */
@@ -1753,6 +1795,7 @@ function updateMetaForTab(tab, options = {}) {
                 }
 
                 videos.forEach(v => {
+                    vtCacheVideo(v);
                     grid.insertAdjacentHTML("beforeend", vtRenderCard(v));
                 });
 
