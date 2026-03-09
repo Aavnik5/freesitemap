@@ -806,7 +806,7 @@
         seekId: null,
         seekUrl: String(v.url || `https://www.eporner.com/video-${id}/`),
         embedUrl: String(v.embed || v.embedUrl || epEmbed || `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`),
-        thumbnail: thumb,
+        thumbnail: thumb ? (thumb.startsWith("https://telegram-dood-worker") ? thumb : `${VIDEOS_WORKER_URL}/proxy/thumb?url=${encodeURIComponent(thumb)}`) : "",
         duration: parseInt(v.length_sec || v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
         likes: 0,
