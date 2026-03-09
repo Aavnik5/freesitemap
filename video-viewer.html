@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -816,7 +818,7 @@
     }
 
     async function fetchEpornerVideo(id) {
-      // Route through Worker to avoid CORS block
+      // Routed through Worker — fixes browser CORS block
       try {
         const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/video?id=${encodeURIComponent(id)}`);
         if (!res.ok) throw new Error(`Worker ${res.status}`);
@@ -835,12 +837,11 @@
           views: parseInt(v.views || "0") || 0,
           likes: 0,
           category: normalizeCategory(v.category, v.title),
-          createdAt: "",
-          description: v.category || "",
+          createdAt: "", description: v.category || "",
           source: "eporner",
         };
       } catch (err) {
-        // Fallback: return minimal so iframe still loads
+        // Fallback — iframe still loads without metadata
         return {
           id, title: paramTitle || "Free HD Video", seoTitle: paramTitle || "Free HD Video",
           seekId: null,
@@ -880,7 +881,7 @@
         title: paramTitle || cached.title || "Video",
         seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
         seekId: doodId,
-        seekUrl: cached.seekUrl || `https://seekstreaming.com/${doodId}`,
+        seekUrl: cached.seekUrl || `https://seekstreaming.com/v/${doodId}`,
         embedUrl: cached.embedUrl || `https://freepornx.embedseek.com/#${doodId}`,
         thumbnail: paramThumb || cached.thumbnail || "",
         duration: cached.duration || 0,
