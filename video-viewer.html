@@ -805,7 +805,7 @@
         seoTitle: title,
         seekId: null,
         seekUrl: String(v.url || `https://www.eporner.com/video-${id}/`),
-        embedUrl: String(v.embed || v.embedUrl || epEmbed || `https://www.eporner.com/embed/${id}/`),
+        embedUrl: String(v.embed || v.embedUrl || epEmbed || `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`),
         thumbnail: thumb,
         duration: parseInt(v.length_sec || v.duration || "0", 10) || 0,
         views: parseInt(v.views || "0", 10) || 0,
@@ -831,7 +831,7 @@
           seoTitle: v.title || "Free HD Video",
           seekId: null,
           seekUrl: v.seekUrl || `https://www.eporner.com/video-${id}/`,
-          embedUrl: v.embedUrl || `https://www.eporner.com/embed/${id}/`,
+          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
           thumbnail: v.thumbnail || "",
           duration: parseInt(v.duration || "0") || 0,
           views: parseInt(v.views || "0") || 0,
@@ -846,7 +846,7 @@
           id, title: paramTitle || "Free HD Video", seoTitle: paramTitle || "Free HD Video",
           seekId: null,
           seekUrl: `https://www.eporner.com/video-${id}/`,
-          embedUrl: epEmbed || `https://www.eporner.com/embed/${id}/`,
+          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
           thumbnail: paramThumb || "", duration: 0, views: 0, likes: 0,
           category: "Desi", createdAt: "", description: "", source: "eporner",
         };
@@ -863,7 +863,7 @@
           seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
           seekId: null,
           seekUrl: cached.seekUrl || `https://www.eporner.com/video-${id}/`,
-          embedUrl: epEmbed || cached.embedUrl || `https://www.eporner.com/embed/${id}/`,
+          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
           thumbnail: paramThumb || cached.thumbnail || "",
           duration: cached.duration || 0,
           views: cached.views || 0,
@@ -936,7 +936,7 @@
       if (video.embedUrl) return video.embedUrl;
       const id = getPrimaryVideoId(video);
       return video.source === "eporner"
-        ? `https://www.eporner.com/embed/${id}/`
+        ? `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`
         : `https://freepornx.embedseek.com/#${id}`;
     }
 
@@ -998,7 +998,7 @@
         ? String(route?.videoId || extractEpornerId(route?.legacyEmbed || "")).trim()
         : "";
       epEmbed = videoType === "eporner"
-        ? (String(route?.legacyEmbed || "").trim() || (epornerId ? `https://www.eporner.com/embed/${epornerId}/` : ""))
+        ? (String(route?.legacyEmbed || "").trim() || (epornerId ? `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${epornerId}` : ""))
         : "";
       currentVideoKey = videoCacheKey(videoType, videoType === "eporner" ? epornerId : doodId);
       adDismissed = videoType !== "seekstreaming";
