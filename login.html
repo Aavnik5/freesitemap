@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1E88F2M75S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1E88F2M75S');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D'0%200%20384%20512'%3E%3Cpath%20fill%3D'%23dc3545'%20d%3D'M153.6%2029.9l-56.5%2056.5c-9.4%209.4-9.4%2024.6%200%2033.9l80%2080c9.4%209.4%2024.6%209.4%2033.9%200l56.5-56.5c9.4-9.4%209.4-24.6%200-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9%200zM64%20192c-35.3%200-64%2028.7-64%2064V448c0%2035.3%2028.7%2064%2064%2064H288c35.3%200%2064-28.7%2064-64V256c0-35.3-28.7-64-64-64H64zm256%2064H304c-8.8%200-16-7.2-16-16s7.2-16%2016-16h16c8.8%200%2016%207.2%2016%2016v32c0%208.8-7.2%2016-16%2016H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16H304c-8.8%200-16%207.2-16%2016v64c0%208.8%207.2%2016%2016%2016h16c8.8%200%2016-7.2%2016-16V368c0-8.8-7.2-16-16-16H288c-8.8%200-16%207.2-16%2016s7.2%2016%2016%2016h32c8.8%200%2016-7.2%2016-16s-7.2-16-16-16z'%2F%3E%3C%2Fsvg%3E">
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body class="admin-page d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="card p-4" style="width: 100%; max-width: 400px;">
+        <h2 class="card-header text-center mb-4">Admin Login</h2>
+        <div class="card-body">
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { firebaseConfig } from './firebase.js'; // Assuming firebaseConfig is exported from firebase.js
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider(); // Initialize Google Auth Provider
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('error-message');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'anikaslyaradmin.html'; // Redirect to admin page on success
+            } catch (error) {
+                errorMessageDiv.textContent = error.message;
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+
+        // Google Sign-In
+        document.getElementById('google-login-button').addEventListener('click', async () => {
+            const errorMessageDiv = document.getElementById('error-message');
+            try {
+                await signInWithPopup(auth, googleProvider);
+                window.location.href = 'anikaslyaradmin.html'; // Redirect to admin page on success
+            } catch (error) {
+                errorMessageDiv.textContent = error.message;
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+    <footer style="background:#000; padding:20px; text-align:center; border-top:1px solid #333; margin-top:50px; font-size:12px; color:#666;">
+        <p>&copy; 2025 FreePornX. All rights reserved.</p>
+        <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+            <a href="terms.html" style="color:#999; text-decoration:none;">Terms</a>
+            <a href="privacy.html" style="color:#999; text-decoration:none;">Privacy</a>
+            <a href="dmca.html" style="color:#999; text-decoration:none;">DMCA</a>
+            <a href="2257.html" style="color:#999; text-decoration:none;">2257 Compliance</a>
+            <a href="contact.html" style="color:#999; text-decoration:none;">Contact</a>
+        </div>
+        <p style="margin-top:10px; font-size:10px;">This site contains adult material. You must be 18+ to enter.</p>
+    </footer>
+</body>
+</html>

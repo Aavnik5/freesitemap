@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Viewer | FreePornX</title>
+  <meta name="description" content="Read story on FreePornX">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Story Viewer | FreePornX">
+  <meta property="og:description" content="Read story on FreePornX">
+  <meta property="og:url" content="https://freepornx.site/story-viewer.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Story Viewer | FreePornX">
+  <meta name="twitter:description" content="Read story on FreePornX">
+  <meta property="og:image" content="https://freepornx.site/cover-adult.jpg">
+  <meta name="twitter:image" content="https://freepornx.site/cover-adult.jpg">
+  <link rel="canonical" href="https://freepornx.site/story-viewer.html">
+  <link rel="preconnect" href="https://doodworker.aav5roy.workers.dev" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <script id="story-schema" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Story Viewer | FreePornX",
+      "mainEntityOfPage": "https://freepornx.site/story-viewer.html"
+    }
+  </script>
+  <style>
+    body { margin: 0; background: #060606; color: #eee; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      height: 52px;
+      border-bottom: 1px solid #232323;
+      background: #070707;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ff2a4e;
+    }
+    .header-btn {
+      position: absolute;
+      top: 9px;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      text-decoration: none;
+      background: #0f0f0f;
+    }
+    .header-btn.left { left: 10px; }
+    .header-btn.right { right: 10px; }
+    .page { padding: 64px 12px 76px; max-width: 760px; margin: 0 auto; }
+    .card-story {
+      background: #101114;
+      border: 1px solid #23252b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background: #161616;
+    }
+    .content-wrap { padding: 14px; }
+    .story-title {
+      color: #fff;
+      font-size: 1.25rem;
+      line-height: 1.3;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+    .meta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #b4bdc8;
+      font-size: .83rem;
+      margin-bottom: 12px;
+    }
+    .story-content {
+      color: #d6dbe3;
+      line-height: 1.75;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+    .story-content p { margin-bottom: 14px; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-outline-light { border-color: #3b3f48; color: #d6dbe3; }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 60px;
+      border-top: 1px solid #222;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 20;
+    }
+    .nav-btn {
+      text-decoration: none;
+      color: #666;
+      font-size: 10px;
+      width: 20%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+    .nav-btn i { font-size: 19px; }
+    .nav-btn.active { color: #dc3545; }
+    .notice {
+      margin-top: 12px;
+      background: #17191d;
+      border: 1px solid #2d333d;
+      color: #bcc7d6;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: .9rem;
+    }
+    .loader {
+      margin-top: 50px;
+      text-align: center;
+      color: #dc3545;
+    }
+    .skeleton-box {
+      background: #111318;
+      border: 1px solid #242934;
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .skeleton-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      animation: pulse-slide 1.1s linear infinite;
+    }
+    .s-line {
+      height: 11px;
+      border-radius: 999px;
+      background: #2a3140;
+      margin-bottom: 10px;
+    }
+    .s-line.lg { height: 15px; width: 72%; }
+    .s-line.md { width: 100%; }
+    .s-line.sm { width: 58%; margin-bottom: 0; }
+    .related-wrap {
+      margin-top: 14px;
+      background: #101114;
+      border: 1px solid #23252b;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .related-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #f2f5fb;
+    }
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .related-item {
+      display: block;
+      text-decoration: none;
+      color: #d8deea;
+      border: 1px solid #2a2f3b;
+      border-radius: 10px;
+      padding: 10px;
+      background: #151820;
+      line-height: 1.4;
+      font-size: .92rem;
+    }
+    .related-item small {
+      display: block;
+      color: #a6afc0;
+      margin-top: 4px;
+      font-size: .78rem;
+    }
+    @keyframes pulse-slide {
+      to { transform: translateX(100%); }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="header-btn left" href="index.html?tab=stories" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+    FreePornX
+    <a class="header-btn right" href="index.html?tab=stories" aria-label="Home"><i class="fas fa-home"></i></a>
+  </header>
+
+  <main class="page">
+    <div id="story-root" class="loader"><div class="skeleton-box"><div class="s-line lg"></div><div class="s-line md"></div><div class="s-line md"></div><div class="s-line sm"></div></div></div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a class="nav-btn" href="index.html?tab=shorts"><i class="fas fa-play-circle"></i><span>Shorts</span></a>
+    <a class="nav-btn" href="index.html?tab=pics"><i class="fas fa-images"></i><span>Pics</span></a>
+    <a class="nav-btn" href="index.html?tab=comics"><i class="fas fa-book-open"></i><span>Comics</span></a>
+    <a class="nav-btn active" href="index.html?tab=stories"><i class="fas fa-book-reader"></i><span>Stories</span></a>
+    <a class="nav-btn" href="index.html?tab=gifs"><i class="fas fa-magic"></i><span>Gifs</span></a>
+  </nav>
+
+  <script>
+    const STORY_WORKER_BASE = "https://doodworker.aav5roy.workers.dev";
+
+    function q(name) {
+      const p = new URLSearchParams(window.location.search);
+      return (p.get(name) || "").trim();
+    }
+
+    function escapeHtml(v) {
+      return String(v || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function isHttpUrl(value) {
+      return /^https?:\/\/[^"'<>\s]+$/i.test(String(value || "").trim());
+    }
+
+    function formatDate(value) {
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function buildCanonicalStoryUrl(sourceUrl) {
+      const sid = q("sid");
+      const params = new URLSearchParams();
+      if (sid) params.set("sid", sid);
+      if (isHttpUrl(sourceUrl)) {
+        params.set("url", sourceUrl);
+      }
+      const query = params.toString();
+      return `https://freepornx.site/story-viewer.html${query ? `?${query}` : ""}`;
+    }
+
+    async function fetchStoryDetail(storyUrl) {
+      const endpoints = [
+        `${STORY_WORKER_BASE}/story-detail?url=${encodeURIComponent(storyUrl)}`,
+        `${STORY_WORKER_BASE}/kahani-detail?url=${encodeURIComponent(storyUrl)}`
+      ];
+      let lastError = "Unable to load story detail.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const res = await fetch(endpoint);
+          if (!res.ok) {
+            lastError = `HTTP ${res.status}`;
+            continue;
+          }
+          const data = await res.json();
+          if (data && data.status === 200 && data.result) return data.result;
+          lastError = data && data.msg ? data.msg : lastError;
+        } catch (err) {
+          lastError = err.message || lastError;
+        }
+      }
+
+      throw new Error(lastError);
+    }
+
+    async function fetchStoriesFeed(page = 1) {
+      const endpoints = [
+        `${STORY_WORKER_BASE}/stories-feed?page=${page}&per_page=24`,
+        `${STORY_WORKER_BASE}/kahani-feed?page=${page}&per_page=24`
+      ];
+      for (const endpoint of endpoints) {
+        try {
+          const res = await fetch(endpoint, { cache: "no-store" });
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data && data.status === 200 && data.result && Array.isArray(data.result.stories)) {
+            return data.result.stories;
+          }
+        } catch {
+          // try next endpoint
+        }
+      }
+      return [];
+    }
+
+    function updateStorySeo(payload, sourceUrl) {
+      const plainText = String(
+        payload.paragraphs && payload.paragraphs[0]
+          ? payload.paragraphs[0]
+          : (payload.excerpt || "Read story on FreePornX.")
+      );
+      const metaDesc = plainText.length > 155 ? `${plainText.slice(0, 152)}...` : plainText;
+      const fullTitle = `${String(payload.title || "Story").trim()} | FreePornX`;
+      const canonicalUrl = buildCanonicalStoryUrl(sourceUrl);
+      document.title = fullTitle;
+
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.setAttribute("href", canonicalUrl);
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute("content", metaDesc);
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute("content", fullTitle);
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute("content", metaDesc);
+      const ogUrl = document.querySelector('meta[property="og:url"]');
+      if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
+      const twTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twTitle) twTitle.setAttribute("content", fullTitle);
+      const twDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twDesc) twDesc.setAttribute("content", metaDesc);
+
+      const schemaNode = document.getElementById("story-schema");
+      if (schemaNode) {
+        const published = payload.date ? new Date(payload.date).toISOString() : undefined;
+        const image = payload.thumbnail || "https://freepornx.site/cover-adult.jpg";
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": payload.title || "Story",
+          "description": metaDesc,
+          "url": canonicalUrl,
+          "datePublished": published,
+          "dateModified": published,
+          "image": image,
+          "author": { "@type": "Organization", "name": "FreePornX" },
+          "publisher": { "@type": "Organization", "name": "FreePornX" },
+          "mainEntityOfPage": canonicalUrl
+        };
+        schemaNode.textContent = JSON.stringify(schema);
+      }
+    }
+
+    function renderStory(data, sourceUrl, noticeText) {
+      const root = document.getElementById("story-root");
+      const title = escapeHtml(data.title || "Story");
+      const date = escapeHtml(formatDate(data.date || "") || data.date || "");
+      const category = escapeHtml(data.category || "");
+      const htmlContent = data.content_html || `<p>${escapeHtml(data.excerpt || "Story preview loaded.")}</p>`;
+      updateStorySeo(data, sourceUrl);
+
+      root.className = "";
+      root.innerHTML = `
+        <article class="card-story">
+          <div class="content-wrap">
+            <h1 class="story-title">${title}</h1>
+            <div class="meta-row">
+              ${category ? `<span><i class="fas fa-book-open"></i> ${category}</span>` : ""}
+              ${date ? `<span><i class="far fa-calendar-alt"></i> ${date}</span>` : ""}
+            </div>
+            <div class="story-content">${htmlContent}</div>
+            ${noticeText ? `<div class="notice">${escapeHtml(noticeText)}</div>` : ""}
+            <div class="actions">
+              <a class="btn btn-danger btn-sm" href="index.html?tab=stories">Back To Stories</a>
+              ${isHttpUrl(sourceUrl) ? `<a class="btn btn-outline-light btn-sm" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Open Source</a>` : ""}
+            </div>
+          </div>
+        </article>
+        <section class="related-wrap">
+          <h2 class="related-title">Related Stories</h2>
+          <div id="related-root" class="related-list">
+            <div class="text-muted small">Loading related stories...</div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderRelatedStories(stories, currentSourceUrl) {
+      const root = document.getElementById("related-root");
+      if (!root) return;
+
+      const usable = (stories || [])
+        .filter((item) => item && isHttpUrl(item.url) && item.url !== currentSourceUrl)
+        .slice(0, 8);
+
+      if (usable.length === 0) {
+        root.innerHTML = `<div class="text-muted small">No related stories available right now.</div>`;
+        return;
+      }
+
+      root.innerHTML = usable.map((item) => {
+        const sid = item && item.story_id ? `sid=${encodeURIComponent(item.story_id)}&` : "";
+        const href = `story-viewer.html?${sid}url=${encodeURIComponent(item.url)}&title=${encodeURIComponent(item.title || "")}&excerpt=${encodeURIComponent(item.excerpt || "")}&category=${encodeURIComponent(item.category || "")}&date=${encodeURIComponent(item.date || "")}`;
+        const title = escapeHtml(item.title || "Story");
+        const cat = escapeHtml(item.category || "Story");
+        return `<a class="related-item" href="${href}">${title}<small>${cat}</small></a>`;
+      }).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const sourceUrl = q("url");
+      const fallback = {
+        title: q("title") || "Story",
+        excerpt: q("excerpt") || "Story preview is available.",
+        category: q("category") || "",
+        date: q("date") || "",
+        content_html: `<p>${escapeHtml(q("excerpt") || "Story preview is available.")}</p>`
+      };
+
+      if (!isHttpUrl(sourceUrl)) {
+        renderStory(fallback, "", "Invalid story URL.");
+        return;
+      }
+
+      try {
+        const detail = await fetchStoryDetail(sourceUrl);
+        renderStory(detail, sourceUrl, "");
+        const relatedStories = await fetchStoriesFeed(1);
+        const byCategory = relatedStories.filter((item) => {
+          const catA = String(item && item.category ? item.category : "").trim().toLowerCase();
+          const catB = String(detail && detail.category ? detail.category : "").trim().toLowerCase();
+          return catA && catB && catA === catB;
+        });
+        renderRelatedStories(byCategory.length ? byCategory : relatedStories, sourceUrl);
+      } catch (err) {
+        renderStory(
+          fallback,
+          sourceUrl,
+          "Full story load nahi hua. Abhi preview dikh raha hai, source button se full page khol sakte ho."
+        );
+        const relatedStories = await fetchStoriesFeed(1);
+        renderRelatedStories(relatedStories, sourceUrl);
+      }
+    });
+  </script>
+</body>
+</html>
