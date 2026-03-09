@@ -118,10 +118,20 @@ function parseTursoResult(data) {
 /**
  * Generate a long-tail SEO optimized title using Groq's Llama 3.3 70B.
  * Falls back to the original title on any error.
+ * @param {string} fallbackTitle  — pre-cleaned title or "Desi Indian Sex Video"
+ * @param {string} category       — detected category e.g. "Desi", "Bhabhi"
+ * @param {boolean} hasCaption    — whether original caption existed
+ * @param {object} env            — Cloudflare Worker env
  */
-async function generateSEOTitle(originalTitle, env) {
+async function generateSEOTitle(fallbackTitle, category, hasCaption, env) {
   try {
-    if (!env.GROQ_API_KEY) return originalTitle;
+    if (!env.GROQ_API_KEY) return fallbackTitle;
+
+    // Category-aware user prompt
+    const userPrompt = hasCaption
+      ? `Original: "${fallbackTitle}". Category: ${category}. Generate SEO title:`
+      : `Generate creative ${category} indian adult video title with explicit keywords. Max 70 chars:`;
+
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -131,27 +141,27 @@ async function generateSEOTitle(originalTitle, env) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         max_tokens: 100,
-        temperature: 0.7,
+        temperature: 0.85,
         messages: [
           {
             role: "system",
             content:
-              "You are an adult video SEO expert. Generate ONE long-tail SEO optimized title for adult videos. Use explicit keywords naturally. Include category keywords. Max 80 chars. Return ONLY the title, nothing else.",
+              "You are an adult video SEO expert for an Indian adult website. Generate ONE creative long-tail SEO optimized title for an adult video. Use explicit Hindi/English keywords. Include desi/indian/bhabhi/milf keywords naturally. Max 70 chars. Return ONLY the title, nothing else. No quotes.",
           },
           {
             role: "user",
-            content: `Original title: "${originalTitle}"\nGenerate SEO title with long-tail keywords:`,
+            content: userPrompt,
           },
         ],
       }),
     });
-    if (!res.ok) return originalTitle;
+    if (!res.ok) return fallbackTitle;
     const data = await res.json();
     const aiTitle = data.choices?.[0]?.message?.content?.trim();
-    return aiTitle && aiTitle.length > 5 ? aiTitle : originalTitle;
+    return aiTitle && aiTitle.length > 5 ? aiTitle : fallbackTitle;
   } catch (err) {
     console.error("Groq SEO title error:", err.message);
-    return originalTitle;
+    return fallbackTitle;
   }
 }
 
@@ -455,9 +465,16 @@ async function processVideo(message, env) {
   const category = detectCategory(caption || fileName);
 
   // 3️⃣ Generate SEO title — try Groq AI first, fallback to regex method
-  const rawTitle = caption || fileName;
-  const fallbackTitle = generateSeoTitleFallback(rawTitle, fileName);
-  const seoTitle = await generateSEOTitle(fallbackTitle, env);
+  const rawTitle = caption || "";
+  const hasCaption = !!caption;
+
+  // If no caption, use generic desi fallback so Groq generates a creative title
+  // instead of getting a useless timestamp filename like "video_1773047259774"
+  const fallbackTitle = rawTitle
+    ? generateSeoTitleFallback(rawTitle, fileName)
+    : "Desi Indian Sex Video";
+
+  const seoTitle = await generateSEOTitle(fallbackTitle, category, hasCaption, env);
 
   // 4️⃣ Login to SeekStreaming → get auth (bearer token or cookie)
   let seekAuth;
@@ -500,7 +517,7 @@ async function processVideo(message, env) {
   // 6️⃣ Save to Turso
   const videoDoc = {
     seekId,
-    title: rawTitle,
+    title: rawTitle || fallbackTitle,
     seoTitle,
     seekUrl,
     embedUrl,
