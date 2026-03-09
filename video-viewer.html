@@ -535,10 +535,8 @@
     }
 
     const VIEWER_VIDEO_CACHE_KEY = "fpx-video-cache-v1";
-    // ✅ These are no longer called directly from browser (India blocks them)
-    // All eporner calls now go through VIDEOS_WORKER_URL proxy
-    // const EPORNER_VIDEO_API = "https://www.eporner.com/api/v2/video";
-    // const EPORNER_SEARCH_API = "https://www.eporner.com/api/v2/video/search/";
+    const EPORNER_VIDEO_API = "https://www.eporner.com/api/v2/video";
+    const EPORNER_SEARCH_API = "https://www.eporner.com/api/v2/video/search/";
 
     function extractEpornerId(value) {
       const text = String(value || "").trim();
@@ -759,7 +757,7 @@
         title: v.title || "Untitled Video",
         seoTitle: v.seoTitle || v.title || "Free HD Video | FreePornX",
         seekId: v.seekId || v.id || id,
-        seekUrl: v.seekUrl || `https://seekstreaming.com/${id}`,
+        seekUrl: v.seekUrl || `https://seekstreaming.com/v/${id}`,
         embedUrl: v.embedUrl || `https://freepornx.embedseek.com/#${id}`,
         thumbnail: v.thumbnail || "",
         duration: parseInt(v.duration || "0", 10) || 0,
@@ -818,83 +816,54 @@
     }
 
     async function fetchEpornerVideo(id) {
-      // ✅ FIX: Route ALL eporner API calls through our Cloudflare Worker proxy
-      // Direct eporner.com calls are blocked by Indian ISPs on desktop.
-      // The worker fetches from eporner server-side (not blocked) and returns data.
-
-      // Try worker eporner feed API (searches by ID as query)
+      // Route through Worker to avoid CORS block
       try {
-        const res = await fetch(
-          `${VIDEOS_WORKER_URL}/eporner/feed?category=${encodeURIComponent(id)}&page=1&limit=10`,
-          { credentials: "omit" }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          const match = (data.videos || []).find(v => String(v.id || "") === String(id));
-          if (match) {
-            return {
-              id: String(match.id || id),
-              title: match.title || paramTitle || "Free HD Video",
-              seoTitle: match.seoTitle || match.title || "Free HD Video",
-              seekId: null,
-              seekUrl: `https://www.eporner.com/video-${id}/`,
-              // ✅ Embed URL goes through worker proxy
-              embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
-              // ✅ Thumbnail goes through worker thumb proxy
-              thumbnail: match.thumbnail
-                ? `${VIDEOS_WORKER_URL}/proxy/eporner/thumb?url=${encodeURIComponent(match.thumbnail)}`
-                : "",
-              duration: match.duration || 0,
-              views: match.views || 0,
-              likes: 0,
-              category: normalizeCategory(match.category, match.title),
-              createdAt: match.createdAt || "",
-              description: "",
-              source: "eporner"
-            };
-          }
-        }
+        const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/video?id=${encodeURIComponent(id)}`);
+        if (!res.ok) throw new Error(`Worker ${res.status}`);
+        const data = await res.json();
+        if (!data.ok || !data.video) throw new Error("Eporner video not found");
+        const v = data.video;
+        return {
+          id: String(v.id || id),
+          title: v.title || "Free HD Video",
+          seoTitle: v.title || "Free HD Video",
+          seekId: null,
+          seekUrl: v.seekUrl || `https://www.eporner.com/video-${id}/`,
+          embedUrl: v.embedUrl || `https://www.eporner.com/embed/${id}/`,
+          thumbnail: v.thumbnail || "",
+          duration: parseInt(v.duration || "0") || 0,
+          views: parseInt(v.views || "0") || 0,
+          likes: 0,
+          category: normalizeCategory(v.category, v.title),
+          createdAt: "",
+          description: v.category || "",
+          source: "eporner",
+        };
       } catch (err) {
-        console.warn("[Viewer] Worker eporner feed failed:", err.message);
+        // Fallback: return minimal so iframe still loads
+        return {
+          id, title: paramTitle || "Free HD Video", seoTitle: paramTitle || "Free HD Video",
+          seekId: null,
+          seekUrl: `https://www.eporner.com/video-${id}/`,
+          embedUrl: epEmbed || `https://www.eporner.com/embed/${id}/`,
+          thumbnail: paramThumb || "", duration: 0, views: 0, likes: 0,
+          category: "Desi", createdAt: "", description: "", source: "eporner",
+        };
       }
-
-      // Fallback: build video object with proxy embed URL (works even without metadata)
-      return {
-        id: String(id),
-        title: paramTitle || "Free HD Video",
-        seoTitle: paramTitle || "Free HD Video | FreePornX",
-        seekId: null,
-        seekUrl: `https://www.eporner.com/video-${id}/`,
-        embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
-        thumbnail: paramThumb
-          ? `${VIDEOS_WORKER_URL}/proxy/eporner/thumb?url=${encodeURIComponent(paramThumb)}`
-          : "",
-        duration: 0,
-        views: 0,
-        likes: 0,
-        category: normalizeCategory("", paramTitle),
-        createdAt: "",
-        description: "",
-        source: "eporner"
-      };
     }
 
     function buildFallbackVideo() {
       if (videoType === "eporner") {
         const cached = getCachedVideo("eporner", epornerId) || {};
         const id = epornerId || extractEpornerId(epEmbed);
-        const rawThumb = paramThumb || cached.thumbnail || "";
         return {
           id,
           title: paramTitle || cached.title || "Free HD Video",
           seoTitle: paramTitle || cached.seoTitle || cached.title || "Free HD Video",
           seekId: null,
           seekUrl: cached.seekUrl || `https://www.eporner.com/video-${id}/`,
-          // ✅ Always use proxy embed for eporner
-          embedUrl: `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`,
-          thumbnail: rawThumb
-            ? `${VIDEOS_WORKER_URL}/proxy/eporner/thumb?url=${encodeURIComponent(rawThumb)}`
-            : "",
+          embedUrl: epEmbed || cached.embedUrl || `https://www.eporner.com/embed/${id}/`,
+          thumbnail: paramThumb || cached.thumbnail || "",
           duration: cached.duration || 0,
           views: cached.views || 0,
           likes: 0,
@@ -923,16 +892,6 @@
         source: "seekstreaming"
       };
     }
-
-    // ✅ FIX: Define onPlayerLoad globally — was missing, caused ReferenceError
-    function onPlayerLoad() {
-      // Hide skeleton when iframe finishes loading
-      const skeleton = $("player-skeleton");
-      const wrap = $("player-wrap");
-      if (skeleton) skeleton.classList.add("d-none");
-      if (wrap) wrap.classList.remove("d-none");
-    }
-    window.onPlayerLoad = onPlayerLoad;
 
     // ── WORKER: list videos (mixed feed) ────────────────────────────────
     async function fetchVideosFromFirestore(category = "", limit = 12, page = 0) {
@@ -973,17 +932,11 @@
     }
 
     function getEmbedUrl(video) {
-      const id = getPrimaryVideoId(video);
-      if (video.source === "eporner") {
-        // ✅ FIX: Always route through worker proxy — never direct eporner.com
-        // This bypasses Indian ISP blocks on desktop AND mobile
-        if (video.embedUrl && video.embedUrl.includes(VIDEOS_WORKER_URL)) {
-          return video.embedUrl; // already proxied
-        }
-        return `${VIDEOS_WORKER_URL}/proxy/eporner/embed/${id}`;
-      }
       if (video.embedUrl) return video.embedUrl;
-      return `https://freepornx.embedseek.com/#${id}`;
+      const id = getPrimaryVideoId(video);
+      return video.source === "eporner"
+        ? `https://www.eporner.com/embed/${id}/`
+        : `https://freepornx.embedseek.com/#${id}`;
     }
 
     function getWatchUrl(video) {
@@ -991,7 +944,7 @@
       if (video.source === "eporner") {
         return video.seekUrl || `https://www.eporner.com/video-${id}/`;
       }
-      return video.seekUrl || `https://seekstreaming.com/${id}`;
+      return video.seekUrl || `https://seekstreaming.com/v/${id}`;
     }
 
     function syncShortUrl(video) {
@@ -1268,14 +1221,10 @@
     }
 
     // ── PLAYER LOAD HANDLER ─────────────────────────────────────────────────
-    // ✅ FIX: Must be global so iframe onload="onPlayerLoad()" can find it
-    window.onPlayerLoad = function() {
-      // Called when iframe finishes loading
-      const skeleton = $("player-skeleton");
-      const wrap = $("player-wrap");
-      if (skeleton) skeleton.classList.add("d-none");
-      if (wrap) wrap.classList.remove("d-none");
-    };
+    function onPlayerLoad() {
+      // Called when iframe finishes loading — skeleton already hidden by renderVideo
+      // Could add analytics ping here if needed
+    }
 
     // ── RELATED VIDEOS ───────────────────────────────────────────────────────
     let relatedCategory = "";
@@ -1322,16 +1271,11 @@
           card.className = "related-card";
           card.href = buildViewerUrl(v);
           const dur = fmtDuration(v.duration);
-          // ✅ FIX: Proxy eporner thumbnails through worker (CDN blocked in India on desktop)
-          let thumb = v.thumbnail || "";
-          if (thumb && v.source === "eporner" && !thumb.includes(VIDEOS_WORKER_URL)) {
-            thumb = `${VIDEOS_WORKER_URL}/proxy/eporner/thumb?url=${encodeURIComponent(thumb)}`;
-          }
-          const fallbackThumb = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='158' viewBox='0 0 280 158'%3E%3Crect fill='%23111827' width='280' height='158'/%3E%3Ctext fill='%23ff3b57' font-family='sans-serif' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3EVideo%3C/text%3E%3C/svg%3E`;
+          const thumb = v.thumbnail || "https://via.placeholder.com/280x158/111827/ff3b57?text=Video";
           card.innerHTML = `
             <div class="related-thumb">
-              <img src="${escapeHtml(thumb || fallbackThumb)}" alt="${escapeHtml(v.seoTitle || v.title)}" loading="lazy"
-                onerror="this.onerror=null;this.src='${fallbackThumb}'">
+              <img src="${escapeHtml(thumb)}" alt="${escapeHtml(v.seoTitle || v.title)}" loading="lazy"
+                onerror="this.src='https://via.placeholder.com/280x158/111827/ff3b57?text=Video'">
               ${dur ? `<span class="thumb-dur">${dur}</span>` : ""}
             </div>
             <div class="related-info">
