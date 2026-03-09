@@ -857,7 +857,7 @@
         <div id="gifs-view" class="grid-view"><div id="gifs-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 10px 0;"></div></div>
 
         <!-- ── VIDEOS TAB VIEW ── -->
-        <div id="videos-view" class="grid-view">
+        <div id="videos-view" class="grid-view" style="padding:0;">
             <!-- Category chips -->
             <div class="videos-cat-scroll" id="videos-cat-scroll">
                 <span class="vcat-chip active" data-cat="" onclick="videosFilterCat('', this)">All</span>
@@ -1574,6 +1574,8 @@ function updateMetaForTab(tab, options = {}) {
         } else if (tab === 'videos') {
             document.querySelector('.main-view').style.overflowY = 'auto';
             document.getElementById('categoryContainer').innerHTML = '';
+            const vv = document.getElementById('videos-view');
+            if (vv) vv.style.display = 'block';
             initVideosTab();
         } else if (tab === 'gifs') {
             document.querySelector('.main-view').style.overflowY = 'auto';
