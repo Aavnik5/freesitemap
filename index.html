@@ -1644,11 +1644,12 @@ function updateMetaForTab(tab, options = {}) {
             pageLoaded: 0,
         };
 
-        /** Fetch videos from Mixed feed (SeekStreaming + Eporner 50/50) */
+        /** Fetch videos from Eporner feed */
         async function vtFetchVideos(category, page) {
-            const params = new URLSearchParams({ page: page || 0 });
+            const epPage = (page || 0) + 1; // Eporner pages start at 1
+            const params = new URLSearchParams({ page: epPage, limit: VIDEOS_PAGE_SIZE });
             if (category && category !== "All") params.set("category", category);
-            const res = await fetch(`${VIDEOS_WORKER_URL}/mixed/feed?${params}`);
+            const res = await fetch(`${VIDEOS_WORKER_URL}/eporner/feed?${params}`);
             if (!res.ok) throw new Error(`Worker ${res.status}`);
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || "Worker error");
@@ -1683,7 +1684,7 @@ function updateMetaForTab(tab, options = {}) {
                     views: v.views || 0,
                     category: v.category || "",
                     createdAt: v.createdAt || "",
-                    source: v.source || "seekstreaming",
+                    source: v.source || "eporner",
                     savedAt: Date.now()
                 };
 
@@ -1762,9 +1763,7 @@ function updateMetaForTab(tab, options = {}) {
             const views = vtFmtNum(v.views > 0 ? v.views : (Math.floor(Math.random() * 9000) + 500));
             const href = vtVideoUrl(v);
             // Source badge
-            const badgeHtml = v.source === "eporner"
-                ? `<span class="vsrc-badge eporner">HD</span>`
-                : `<span class="vsrc-badge seekstreaming">ORIGINAL</span>`;
+            const badgeHtml = `<span class="vsrc-badge eporner">HD</span>`;
             return `
                 <a class="vcard" href="${href}" target="_self">
                     <div class="vcard-thumb">
@@ -1803,7 +1802,7 @@ function updateMetaForTab(tab, options = {}) {
                 if (videos.length === 0 && vtState.pageLoaded === 0) {
                     grid.innerHTML = `<div class="vempty" style="grid-column:1/-1">
                         <i class="fas fa-video-slash"></i>
-                        No videos yet. Upload your first video via Telegram!
+                        No videos found. Try a different category!
                     </div>`;
                     if (wrap) wrap.innerHTML = "";
                     vtState.allLoaded = true;
